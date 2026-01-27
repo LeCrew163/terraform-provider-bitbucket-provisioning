@@ -142,21 +142,39 @@ class ProjectConfig(BaseModel):
 - `cerberus`: Rejected - dictionary-based, less Pythonic
 - Manual validation: Rejected - error-prone, poor developer experience
 
-### 5. Dependency Management: Poetry
+### 5. Dependency Management: uv
 
-**Decision:** Use Poetry for dependency management and packaging.
+**Decision:** Use `uv` for dependency management and packaging.
 
 **Rationale:**
+- Extremely fast (10-100x faster than pip/Poetry)
 - Modern Python packaging (PEP 517/518 compliant)
-- Lock file ensures reproducible builds
-- Simplified dependency resolution
+- Lock file ensures reproducible builds (`uv.lock`)
 - Built-in virtual environment management
-- Easy publish to PyPI or private package repository
+- Drop-in replacement for pip and pip-tools
+- Active development by Astral (ruff creators)
+- Growing adoption in Python community
+- Simpler and faster than Poetry for CLI tools
+
+**Usage:**
+```bash
+# Install dependencies
+uv sync
+
+# Add new dependency
+uv add click pydantic pyyaml
+
+# Run commands in venv
+uv run python -m bitbucket_provisioning
+
+# Build package
+uv build
+```
 
 **Alternatives Considered:**
+- `poetry`: Rejected - slower, more complex for CLI tools
 - `pip` + `requirements.txt`: Rejected - no lock file, manual version management
 - `pipenv`: Rejected - slower, less active development
-- `uv`: Considered but too new, less mature ecosystem
 
 ### 6. Modular YAML Configuration: File References
 
@@ -415,6 +433,75 @@ $ bitbucket-provision project apply config.yaml
 - Error on conflict: Rejected - poor CI/CD experience, not declarative
 - Hybrid with `--update` flag: Rejected - adds complexity, conditional logic in CI
 - Separate create/update commands: Rejected - forces users to track state externally
+
+### 15. Project Export for Migration: Single File Format
+
+**Decision:** Provide `project export` command to generate YAML configuration from existing Bitbucket projects.
+
+**Rationale:**
+- Critical for adoption - teams need to migrate existing projects to YAML management
+- Reduces manual work of translating UI configuration to YAML
+- Enables GitOps workflow for existing projects
+- Validates tool can read current state correctly
+- Provides template/example for new projects
+
+**Command Structure:**
+```bash
+# Export single project to file
+bitbucket-provision project export PROJKEY -o project.yaml
+
+# Export project to stdout
+bitbucket-provision project export PROJKEY
+
+# Verbose output showing what's being exported
+bitbucket-provision project export PROJKEY -v -o project.yaml
+```
+
+**Export Format:**
+- Single YAML file containing all 7 capabilities
+- Same schema as apply command expects
+- Comments indicating which fields are optional
+- Defaults are included but commented for clarity
+
+**Capabilities Exported:**
+1. Project settings (name, description, visibility, avatar)
+2. User and group permissions
+3. Branch permission rules
+4. SSH access keys
+5. Branch workflow configuration
+6. Project hooks and webhooks
+7. Default reviewer rules
+
+**Implementation:**
+- Reuse provisioner read logic (each has `show()` method)
+- Aggregate all capability data into unified config model
+- Serialize to YAML with proper formatting and comments
+- Include metadata (export timestamp, Bitbucket version, tool version)
+
+**Export Workflow:**
+```python
+# Pseudo-code
+def export_project(project_key):
+    config = ProjectConfig(project=fetch_project_details(project_key))
+    config.permissions = permissions_provisioner.show(project_key)
+    config.branch_permissions = branch_perms_provisioner.show(project_key)
+    config.access_keys = access_keys_provisioner.show(project_key)
+    config.branch_workflow = workflow_provisioner.show(project_key)
+    config.hooks = hooks_provisioner.show(project_key)
+    config.default_reviewers = reviewers_provisioner.show(project_key)
+    return serialize_to_yaml(config)
+```
+
+**Phase:**
+- Phase 1.5 - Implement after basic apply functionality works
+- Requires all provisioners to implement `show()` method
+- Useful for testing apply logic (export → modify → apply)
+
+**Alternatives Considered:**
+- Modular export by default: Rejected - more complex for migration, harder to review
+- Per-capability export: Rejected - users want full project config
+- Always to stdout: Rejected - users want to save directly to file
+- Include empty/default values: Rejected - creates noisy YAML, hard to read
 
 ## Risks / Trade-offs
 

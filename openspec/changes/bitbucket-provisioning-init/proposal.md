@@ -7,6 +7,7 @@ Manual Bitbucket Data Center project provisioning is time-consuming, error-prone
 - Introduce a Python-based CLI tool for Bitbucket Data Center project provisioning
 - Generate Bitbucket API client from official OpenAPI specification (v3, Bitbucket Data Center)
 - Enable declarative project configuration via YAML files
+- Support exporting existing project configurations to YAML for migration
 - Support CI/CD pipeline integration for automated provisioning
 - Provide project structure with modular architecture for extensibility
 
@@ -20,6 +21,7 @@ Manual Bitbucket Data Center project provisioning is time-consuming, error-prone
 - `branch-workflow`: Configure branching model and workflow settings
 - `hooks-configuration`: Set up and configure project-level hooks
 - `default-reviewers`: Define and manage default reviewer rules
+- `project-export`: Export existing project configurations to YAML format for migration
 
 ### Modified Capabilities
 <!-- No existing capabilities to modify - this is a greenfield project -->
@@ -45,5 +47,6 @@ Manual Bitbucket Data Center project provisioning is time-consuming, error-prone
 - CI/CD pipelines (for integration)
 
 **Scope Considerations:**
-- **Phase 1 (this change)**: Project provisioning only
+- **Phase 1 (this change)**: Project provisioning (apply and validate)
+- **Phase 1.5 (migration support)**: Project export for migrating existing projects to YAML
 - **Phase 2 (future)**: Repository management capabilities
