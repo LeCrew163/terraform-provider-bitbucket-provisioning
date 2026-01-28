@@ -1,0 +1,60 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+terraform-provider-bitbucket-dc
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.txt
+coverage.html
+
+# Go workspace file
+go.work
+
+# Dependency directories
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Terraform files
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+crash.log
+crash.*.log
+
+# Release artifacts
+dist/
+*.zip
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation build artifacts
+docs/
+
+# Environment files
+.env
+.envrc
+
+# Test cache
+.test-data/
+
+# Temporary files
+tmp/
+temp/
+*.tmp

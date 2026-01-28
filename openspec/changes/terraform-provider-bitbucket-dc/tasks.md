@@ -28,70 +28,70 @@ See [reusable-components-analysis.md](./reusable-components-analysis.md) for det
 
 ## 1. Project Setup & Infrastructure
 
-- [ ] 1.1 Initialize Go module with go.mod ✨
-- [ ] 1.2 Create standard Terraform provider directory structure ✨
-- [ ] 1.3 Set up internal/ package organization ✨
-- [ ] 1.4 Configure Go dependencies (Terraform Plugin Framework, testing libraries) 🔄
-- [ ] 1.5 Create Makefile with common tasks (build, test, generate, docs) 🔄 **Can copy from Cloud provider**
-- [ ] 1.6 Set up .gitignore for Go project 🔄 **Can copy from Cloud provider**
-- [ ] 1.7 Configure Go version requirement (1.21+) ✨
-- [ ] 1.8 Create main.go provider entrypoint 🔄 **Reference Cloud provider pattern**
-- [ ] 1.9 Create README.md with project overview and development setup ✨
-- [ ] 1.10 Set up .goreleaser.yml for releases 🔄 **Can copy from Cloud provider with minor adjustments**
+- [x] 1.1 Initialize Go module with go.mod ✨
+- [x] 1.2 Create standard Terraform provider directory structure ✨
+- [x] 1.3 Set up internal/ package organization ✨
+- [x] 1.4 Configure Go dependencies (Terraform Plugin Framework, testing libraries) 🔄
+- [x] 1.5 Create Makefile with common tasks (build, test, generate, docs) 🔄 **Can copy from Cloud provider**
+- [x] 1.6 Set up .gitignore for Go project 🔄 **Can copy from Cloud provider**
+- [x] 1.7 Configure Go version requirement (1.21+) ✨
+- [x] 1.8 Create main.go provider entrypoint 🔄 **Reference Cloud provider pattern**
+- [x] 1.9 Create README.md with project overview and development setup ✨
+- [x] 1.10 Set up .goreleaser.yml for releases 🔄 **Can copy from Cloud provider with minor adjustments**
 
 ## 2. OpenAPI Client Generation
 
-- [ ] 2.1 Download Bitbucket Data Center OpenAPI spec (v10.0)
-- [ ] 2.2 Store OpenAPI spec in version control (specs/bitbucket-openapi.json)
-- [ ] 2.3 Install openapi-generator CLI
-- [ ] 2.4 Create generation script/Makefile target for Go client generation
-- [ ] 2.5 Generate initial API client from OpenAPI spec
-- [ ] 2.6 Create internal/client/generated/ directory for generated code
-- [ ] 2.7 Commit generated client to version control
-- [ ] 2.8 Create internal/client/client.go wrapper for configuration
-- [ ] 2.9 Implement authentication support (PAT and HTTP Basic)
-- [ ] 2.10 Implement retry logic with exponential backoff
-- [ ] 2.11 Implement error handling and translation to Terraform diagnostics
-- [ ] 2.12 Create client factory function with configuration
-- [ ] 2.13 Add API version compatibility checking
-- [ ] 2.14 Implement context propagation for all client operations
+- [x] 2.1 Download Bitbucket Data Center OpenAPI spec (v10.0)
+- [x] 2.2 Store OpenAPI spec in version control (specs/bitbucket-openapi.json)
+- [x] 2.3 Install openapi-generator CLI
+- [x] 2.4 Create generation script/Makefile target for Go client generation
+- [x] 2.5 Generate initial API client from OpenAPI spec
+- [x] 2.6 Create internal/client/generated/ directory for generated code
+- [x] 2.7 Commit generated client to version control
+- [x] 2.8 Create internal/client/client.go wrapper for configuration
+- [x] 2.9 Implement authentication support (PAT and HTTP Basic)
+- [x] 2.10 Implement retry logic with exponential backoff
+- [x] 2.11 Implement error handling and translation to Terraform diagnostics
+- [x] 2.12 Create client factory function with configuration
+- [x] 2.13 Add API version compatibility checking
+- [x] 2.14 Implement context propagation for all client operations
 
 ## 3. Provider Core Implementation
 
-- [ ] 3.1 Create internal/provider/provider.go
-- [ ] 3.2 Implement provider schema with configuration attributes
-- [ ] 3.3 Implement Configure method for provider initialization
-- [ ] 3.4 Add base_url configuration attribute
-- [ ] 3.5 Add token configuration attribute (marked sensitive)
-- [ ] 3.6 Add username/password configuration attributes (marked sensitive)
-- [ ] 3.7 Add insecure_skip_verify configuration attribute
-- [ ] 3.8 Add timeout configuration attribute
-- [ ] 3.9 Implement environment variable support for configuration
-- [ ] 3.10 Add validation for required configuration
-- [ ] 3.11 Implement provider metadata (name, version)
-- [ ] 3.12 Register resources in provider Resources method
-- [ ] 3.13 Register data sources in provider DataSources method
-- [ ] 3.14 Add provider-level diagnostics and error handling
-- [ ] 3.15 Implement pre-flight connectivity check
+- [x] 3.1 Create internal/provider/provider.go
+- [x] 3.2 Implement provider schema with configuration attributes
+- [x] 3.3 Implement Configure method for provider initialization
+- [x] 3.4 Add base_url configuration attribute
+- [x] 3.5 Add token configuration attribute (marked sensitive)
+- [x] 3.6 Add username/password configuration attributes (marked sensitive)
+- [x] 3.7 Add insecure_skip_verify configuration attribute
+- [x] 3.8 Add timeout configuration attribute
+- [x] 3.9 Implement environment variable support for configuration
+- [x] 3.10 Add validation for required configuration
+- [x] 3.11 Implement provider metadata (name, version)
+- [x] 3.12 Register resources in provider Resources method
+- [x] 3.13 Register data sources in provider DataSources method
+- [x] 3.14 Add provider-level diagnostics and error handling
+- [x] 3.15 Implement pre-flight connectivity check
 
 ## 4. Project Resource
 
-- [ ] 4.1 Create internal/provider/resource_project.go
-- [ ] 4.2 Define project resource schema with all attributes
-- [ ] 4.3 Implement resource Metadata method
-- [ ] 4.4 Implement Create method for project creation
-- [ ] 4.5 Implement Read method for state refresh
-- [ ] 4.6 Implement Update method for project updates
-- [ ] 4.7 Implement Delete method for project deletion
-- [ ] 4.8 Add validation for project key format
-- [ ] 4.9 Implement computed ID attribute
-- [ ] 4.10 Add RequiresReplace for immutable key attribute
-- [ ] 4.11 Implement ImportState method with key-based import
-- [ ] 4.12 Handle project visibility (public/private)
-- [ ] 4.13 Handle project description (optional)
-- [ ] 4.14 Add error handling for duplicate keys
-- [ ] 4.15 Add error handling for permission errors
-- [ ] 4.16 Implement avatar configuration (optional, future)
+- [x] 4.1 Create internal/provider/resource_project.go
+- [x] 4.2 Define project resource schema with all attributes
+- [x] 4.3 Implement resource Metadata method
+- [x] 4.4 Implement Create method for project creation
+- [x] 4.5 Implement Read method for state refresh
+- [x] 4.6 Implement Update method for project updates
+- [x] 4.7 Implement Delete method for project deletion
+- [x] 4.8 Add validation for project key format
+- [x] 4.9 Implement computed ID attribute
+- [x] 4.10 Add RequiresReplace for immutable key attribute
+- [x] 4.11 Implement ImportState method with key-based import
+- [x] 4.12 Handle project visibility (public/private)
+- [x] 4.13 Handle project description (optional)
+- [x] 4.14 Add error handling for duplicate keys
+- [x] 4.15 Add error handling for permission errors
+- [x] 4.16 Implement avatar configuration (optional, future)
 - [ ] 4.17 Write unit tests for project resource schema
 - [ ] 4.18 Write acceptance tests for project lifecycle
 

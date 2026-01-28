@@ -1,0 +1,136 @@
+// package client
+// 
+// import (
+// 	"context"
+// 	"fmt"
+// 	"strconv"
+// 	"strings"
+// 
+// 	"github.com/hashicorp/terraform-plugin-log/tflog"
+// )
+// 
+// const (
+// 	// MinimumSupportedVersion is the minimum Bitbucket Data Center version
+// 	MinimumSupportedVersion = "10.0"
+// )
+// 
+// // VersionInfo holds Bitbucket version information
+// type VersionInfo struct {
+// 	Version      string
+// 	BuildNumber  string
+// 	DisplayName  string
+// 	Major        int
+// 	Minor        int
+// 	Patch        int
+// }
+// 
+// // ParseVersion parses a version string into a VersionInfo struct
+// func ParseVersion(version string) (*VersionInfo, error) {
+// 	info := &VersionInfo{
+// 		Version: version,
+// 	}
+// 
+// 	// Version format is typically "X.Y.Z" or "X.Y"
+// 	parts := strings.Split(version, ".")
+// 	if len(parts) < 2 {
+// 		return nil, fmt.Errorf("invalid version format: %s", version)
+// 	}
+// 
+// 	var err error
+// 	info.Major, err = strconv.Atoi(parts[0])
+// 	if err != nil {
+// 		return nil, fmt.Errorf("invalid major version: %s", parts[0])
+// 	}
+// 
+// 	info.Minor, err = strconv.Atoi(parts[1])
+// 	if err != nil {
+// 		return nil, fmt.Errorf("invalid minor version: %s", parts[1])
+// 	}
+// 
+// 	if len(parts) >= 3 {
+// 		info.Patch, err = strconv.Atoi(parts[2])
+// 		if err != nil {
+// 			return nil, fmt.Errorf("invalid patch version: %s", parts[2])
+// 		}
+// 	}
+// 
+// 	return info, nil
+// }
+// 
+// // IsCompatible checks if the version is compatible with the provider
+// func (v *VersionInfo) IsCompatible() bool {
+// 	minVersion, _ := ParseVersion(MinimumSupportedVersion)
+// 
+// 	// Check major version
+// 	if v.Major < minVersion.Major {
+// 		return false
+// 	}
+// 	if v.Major > minVersion.Major {
+// 		return true
+// 	}
+// 
+// 	// Same major version, check minor
+// 	if v.Minor < minVersion.Minor {
+// 		return false
+// 	}
+// 
+// 	return true
+// }
+// 
+// // String returns the version as a string
+// func (v *VersionInfo) String() string {
+// 	if v.Patch > 0 {
+// 		return fmt.Sprintf("%d.%d.%d", v.Major, v.Minor, v.Patch)
+// 	}
+// 	return fmt.Sprintf("%d.%d", v.Major, v.Minor)
+// }
+// 
+// // CheckVersion verifies that the Bitbucket instance version is compatible
+// func (c *Client) CheckVersion(ctx context.Context) (*VersionInfo, error) {
+// 	authCtx := c.NewAuthContext(ctx)
+// 
+// 	tflog.Debug(ctx, "Checking Bitbucket Data Center version")
+// 
+// 	// Get application properties which includes version information
+// 	props, resp, err := c.client.ApplicationPropertiesAPI.GetApplicationProperties(authCtx).Execute()
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to get application properties: %w", ParseErrorResponse(resp))
+// 	}
+// 
+// 	// Extract version from response
+// 	versionStr := props.GetVersion()
+// 	if versionStr == "" {
+// 		return nil, fmt.Errorf("could not determine Bitbucket version")
+// 	}
+// 
+// 	tflog.Debug(ctx, "Bitbucket version detected", map[string]interface{}{
+// 		"version": versionStr,
+// 	})
+// 
+// 	// Parse version
+// 	version, err := ParseVersion(versionStr)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to parse version: %w", err)
+// 	}
+// 
+// 	version.DisplayName = props.GetDisplayName()
+// 	if buildNumber, ok := props.GetBuildNumberOk(); ok {
+// 		version.BuildNumber = *buildNumber
+// 	}
+// 
+// 	// Check compatibility
+// 	if !version.IsCompatible() {
+// 		return version, fmt.Errorf(
+// 			"Bitbucket Data Center version %s is not supported. Minimum required version is %s",
+// 			version.String(),
+// 			MinimumSupportedVersion,
+// 		)
+// 	}
+// 
+// 	tflog.Info(ctx, "Bitbucket Data Center version is compatible", map[string]interface{}{
+// 		"version":      version.String(),
+// 		"min_required": MinimumSupportedVersion,
+// 	})
+// 
+// 	return version, nil
+// }
