@@ -4,6 +4,34 @@
 
 This proposal outlines the design and implementation of a Terraform provider for Bitbucket Data Center, enabling Infrastructure-as-Code management of Bitbucket projects, repositories, permissions, and configurations.
 
+## Why a New Provider?
+
+**There is currently NO Terraform provider for Bitbucket Data Center.**
+
+### Existing Providers Are Cloud-Only
+
+The only existing Terraform provider for Bitbucket ([DrFaust92/terraform-provider-bitbucket](https://github.com/DrFaust92/terraform-provider-bitbucket)) is specifically designed for **Bitbucket Cloud**, not Data Center.
+
+**Key Differences:**
+
+| Aspect | Bitbucket Cloud | Bitbucket Data Center |
+|--------|----------------|----------------------|
+| **Hosting** | SaaS (bitbucket.org) | Self-hosted on-premise |
+| **API** | REST API 2.0 | REST API 1.0/3.0 (OpenAPI spec) |
+| **URL** | api.bitbucket.org | Your domain (e.g., bitbucket.company.com) |
+| **Top-level** | Workspaces | Projects |
+| **Auth** | App passwords, OAuth | Personal Access Tokens, HTTP Basic |
+
+**Why Cloud Provider Doesn't Work:**
+- Incompatible API endpoints (Cloud: `/2.0/repositories/...` vs DC: `/rest/api/1.0/projects/...`)
+- Different authentication mechanisms
+- Different resource models (workspaces vs projects)
+- Cloud-specific features vs Data Center features
+
+**This provider fills a genuine market gap for organizations using Bitbucket Data Center.**
+
+See [existing-providers-analysis.md](./existing-providers-analysis.md) for detailed analysis.
+
 ## Why Terraform Provider vs Python CLI?
 
 This proposal presents an alternative approach to the existing Python CLI tool proposal (`bitbucket-provisioning-init`). Here's a comparison:
@@ -420,15 +448,27 @@ If migrating from the Python CLI tool proposal:
 
 ## Files in This Proposal
 
+### Core Documentation
 - **proposal.md** - High-level overview and impact
 - **design.md** - Detailed architectural decisions
-- **tasks.md** - Implementation task breakdown
+- **tasks.md** - Implementation task breakdown (with reusability markers)
+- **decisions-summary.md** - Summary of all key decisions
+- **README.md** - This file (executive summary)
+
+### Reusability Analysis
+- **existing-providers-analysis.md** - Analysis of Cloud provider and why it's incompatible
+- **reusable-components-analysis.md** - Detailed breakdown of what can be reused (32%) vs built new (68%)
+- **QUICKSTART-REUSABILITY.md** - Quick reference for developers: what to copy, adapt, or build
+
+### CI/CD
+- **jenkins-pipeline-example.md** - Example Jenkinsfiles for CI/CD (Cloud provider uses GitHub Actions, not applicable)
+
+### Resource Specifications
 - **specs/** - Detailed specifications for each resource
-  - project-resource/spec.md
-  - repository-resource/spec.md
-  - project-permissions-resource/spec.md
-  - branch-permissions-resource/spec.md
-- **README.md** - This file
+  - project-resource/spec.md - Project resource design
+  - repository-resource/spec.md - Repository resource design
+  - project-permissions-resource/spec.md - Permissions resource design
+  - branch-permissions-resource/spec.md - Branch permissions (placeholder)
 
 ## Next Steps
 

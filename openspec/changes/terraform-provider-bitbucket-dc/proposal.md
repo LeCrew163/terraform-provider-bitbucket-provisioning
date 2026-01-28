@@ -1,6 +1,10 @@
 ## Why
 
-Manual Bitbucket Data Center project and repository management is time-consuming, error-prone, and leads to inconsistent configurations. Infrastructure teams increasingly adopt Infrastructure-as-Code (IaC) practices with Terraform, but lack a provider for Bitbucket Data Center, forcing them to use external provisioning scripts or manual processes. A native Terraform provider will enable declarative, version-controlled, and auditable Bitbucket infrastructure management integrated seamlessly with existing Terraform workflows.
+Manual Bitbucket Data Center project and repository management is time-consuming, error-prone, and leads to inconsistent configurations. Infrastructure teams increasingly adopt Infrastructure-as-Code (IaC) practices with Terraform, but **there is currently NO Terraform provider for Bitbucket Data Center**.
+
+The only existing Bitbucket provider ([DrFaust92/terraform-provider-bitbucket](https://github.com/DrFaust92/terraform-provider-bitbucket)) is specifically designed for **Bitbucket Cloud** and is incompatible with Data Center due to fundamental API and architecture differences. This forces teams using Bitbucket Data Center to rely on external provisioning scripts or manual processes.
+
+A native Terraform provider for Bitbucket Data Center will enable declarative, version-controlled, and auditable infrastructure management integrated seamlessly with existing Terraform workflows, filling a genuine gap in the Terraform ecosystem.
 
 ## What Changes
 
@@ -72,8 +76,11 @@ Manual Bitbucket Data Center project and repository management is time-consuming
   - Personal repositories
   - Cluster configuration (if applicable)
 
-**Terraform Registry:**
-- Published as `terraform-provider-bitbucketdc`
-- Namespace: TBD (organization/company name)
-- Documentation hosted on Terraform Registry
+**Distribution:**
+- Published to **Terraform Cloud/Enterprise private registry** (internal use)
+- Provider name: `terraform-provider-bitbucketdc`
+- Namespace: `app.terraform.io/<your-org>/bitbucketdc` (private)
+- Documentation hosted in private registry
 - Semantic versioning for releases
+- Access controlled via organization membership
+- Note: Can be published to public Terraform Registry later if open-sourced

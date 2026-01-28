@@ -1,17 +1,43 @@
 # Implementation Tasks
 
+## Reusability from Cloud Provider
+
+While we're building a new provider for Bitbucket Data Center, we can leverage the existing Cloud provider ([DrFaust92/terraform-provider-bitbucket](https://github.com/DrFaust92/terraform-provider-bitbucket)) as a reference.
+
+**Reusability Summary:**
+- 🔄 **~32% can be adapted** - Build infrastructure, patterns, templates
+- ✨ **~68% must be built new** - API client, resource logic, DC-specific code, CI/CD
+
+**Key Reusable Components:**
+- ✅ GoReleaser configuration (~95% reusable)
+- ✅ Makefile and build scripts (~90% reusable)
+- ✅ Testing patterns and structure (~60% reusable)
+- ✅ Provider configuration patterns (~50% reusable - adapt SDK v2 → Plugin Framework)
+- ✅ Documentation templates (~50% reusable)
+- ❌ Jenkins CI/CD (0% reusable - Cloud provider uses GitHub Actions)
+- ❌ API client (0% reusable - completely different APIs)
+- ❌ Resource implementations (~10% reusable - patterns only, rewrite logic)
+
+See [reusable-components-analysis.md](./reusable-components-analysis.md) for detailed analysis.
+
+**Legend:**
+- 🔄 = Can adapt/reference from Cloud provider
+- ✨ = Must build from scratch
+
+---
+
 ## 1. Project Setup & Infrastructure
 
-- [ ] 1.1 Initialize Go module with go.mod
-- [ ] 1.2 Create standard Terraform provider directory structure
-- [ ] 1.3 Set up internal/ package organization
-- [ ] 1.4 Configure Go dependencies (Terraform Plugin Framework, testing libraries)
-- [ ] 1.5 Create Makefile with common tasks (build, test, generate, docs)
-- [ ] 1.6 Set up .gitignore for Go project
-- [ ] 1.7 Configure Go version requirement (1.21+)
-- [ ] 1.8 Create main.go provider entrypoint
-- [ ] 1.9 Create README.md with project overview and development setup
-- [ ] 1.10 Set up .goreleaser.yml for releases
+- [ ] 1.1 Initialize Go module with go.mod ✨
+- [ ] 1.2 Create standard Terraform provider directory structure ✨
+- [ ] 1.3 Set up internal/ package organization ✨
+- [ ] 1.4 Configure Go dependencies (Terraform Plugin Framework, testing libraries) 🔄
+- [ ] 1.5 Create Makefile with common tasks (build, test, generate, docs) 🔄 **Can copy from Cloud provider**
+- [ ] 1.6 Set up .gitignore for Go project 🔄 **Can copy from Cloud provider**
+- [ ] 1.7 Configure Go version requirement (1.21+) ✨
+- [ ] 1.8 Create main.go provider entrypoint 🔄 **Reference Cloud provider pattern**
+- [ ] 1.9 Create README.md with project overview and development setup ✨
+- [ ] 1.10 Set up .goreleaser.yml for releases 🔄 **Can copy from Cloud provider with minor adjustments**
 
 ## 2. OpenAPI Client Generation
 
@@ -281,17 +307,18 @@
 - [ ] 18.9 Write acceptance tests for advanced features
 - [ ] 18.10 Document advanced resource usage
 
-## 19. CI/CD Setup
+## 19. CI/CD Setup (Jenkins)
 
-- [ ] 19.1 Create GitHub Actions workflow for testing
-- [ ] 19.2 Set up workflow for unit tests on PR
-- [ ] 19.3 Set up workflow for linting (golangci-lint)
-- [ ] 19.4 Set up workflow for acceptance tests (manual trigger)
-- [ ] 19.5 Create release workflow using GoReleaser
-- [ ] 19.6 Configure GPG signing for releases
-- [ ] 19.7 Set up dependabot for dependency updates
-- [ ] 19.8 Add status badges to README
-- [ ] 19.9 Configure branch protection rules
+- [ ] 19.1 Create Jenkinsfile for CI/CD pipeline ✨ **Build from scratch (Cloud provider uses GitHub Actions)**
+- [ ] 19.2 Set up Jenkins stage for unit tests ✨
+- [ ] 19.3 Set up Jenkins stage for linting (golangci-lint) 🔄 **Can copy .golangci.yml from Cloud provider**
+- [ ] 19.4 Set up Jenkins stage for acceptance tests (manual/parameterized) ✨
+- [ ] 19.5 Create Jenkins release pipeline using GoReleaser ✨
+- [ ] 19.6 Configure GPG signing in Jenkins for releases 🔄 **Same GPG setup as Cloud provider**
+- [ ] 19.7 Set up Jenkins scheduled job for dependency checks ✨
+- [ ] 19.8 Configure Jenkins build status notifications ✨
+- [ ] 19.9 Set up Jenkins credentials for Terraform Registry (Terraform Cloud) ✨
+- [ ] 19.10 Document Jenkins setup requirements and configuration ✨
 
 ## 20. Release Preparation
 

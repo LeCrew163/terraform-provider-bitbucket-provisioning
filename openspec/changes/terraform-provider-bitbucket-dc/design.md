@@ -15,6 +15,18 @@ This is a greenfield Go project to create a Terraform provider for Bitbucket Dat
 - Secondary users: Developers defining infrastructure in Terraform modules
 - Terraform Cloud/Enterprise users requiring team collaboration
 
+**Existing Providers:**
+- A Terraform provider exists for Bitbucket Cloud ([DrFaust92/terraform-provider-bitbucket](https://github.com/DrFaust92/terraform-provider-bitbucket))
+- It is NOT compatible with Data Center (different APIs, different architecture)
+- However, we can reuse ~35% of infrastructure and patterns:
+  - ✅ Build infrastructure (GoReleaser, Makefile, CI/CD)
+  - ✅ Provider structure patterns (adapted for Plugin Framework)
+  - ✅ Testing patterns and structure
+  - ✅ Documentation templates
+  - ❌ Cannot reuse: API client (100% different), resource logic (90% different)
+- See [reusable-components-analysis.md](./reusable-components-analysis.md) for detailed analysis
+- **Approach:** Use Cloud provider as reference/template, build DC provider from scratch
+
 ## Goals / Non-Goals
 
 **Goals:**
