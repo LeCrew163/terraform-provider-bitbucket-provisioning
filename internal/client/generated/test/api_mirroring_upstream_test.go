@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/alpina/terraform-provider-bitbucket-dc/internal/client/generated"
+	openapiclient "bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/internal/client/generated"
 )
 
 func Test_bitbucket_MirroringUpstreamAPIService(t *testing.T) {

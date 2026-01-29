@@ -1,4 +1,4 @@
-module github.com/alpina/terraform-provider-bitbucket-dc
+module bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning
 
 go 1.24.4
 

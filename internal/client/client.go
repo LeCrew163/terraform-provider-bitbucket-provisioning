@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/alpina/terraform-provider-bitbucket-dc/internal/client/generated"
+	"bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/internal/client/generated"
 )
 
 // Client wraps the generated Bitbucket API client with additional functionality

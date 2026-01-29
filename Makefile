@@ -6,8 +6,8 @@ build:
 
 .PHONY: install
 install: build
-	mkdir -p ~/.terraform.d/plugins/registry.terraform.io/alpina/bitbucket-dc/0.1.0/darwin_arm64
-	mv terraform-provider-bitbucket-dc ~/.terraform.d/plugins/registry.terraform.io/alpina/bitbucket-dc/0.1.0/darwin_arm64/
+	mkdir -p ~/.terraform.d/plugins/colab.internal.sldo.cloud/alpina/bitbucket-dc/0.1.0/darwin_arm64
+	mv terraform-provider-bitbucket-dc ~/.terraform.d/plugins/colab.internal.sldo.cloud/alpina/bitbucket-dc/0.1.0/darwin_arm64/
 
 .PHONY: test
 test:

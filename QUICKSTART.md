@@ -14,7 +14,7 @@ make install
 ```
 
 The provider will be installed to:
-`~/.terraform.d/plugins/registry.terraform.io/alpina/bitbucket-dc/0.1.0/darwin_arm64/`
+`~/.terraform.d/plugins/colab.internal.sldo.cloud/alpina/bitbucket-dc/0.1.0/darwin_arm64/`
 
 ## Create Your First Project
 
@@ -24,7 +24,7 @@ Create a file named `main.tf`:
 terraform {
   required_providers {
     bitbucketdc = {
-      source = "registry.terraform.io/alpina/bitbucket-dc"
+      source = "colab.internal.sldo.cloud/alpina/bitbucket-dc"
       version = "~> 0.1"
     }
   }

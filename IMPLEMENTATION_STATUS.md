@@ -302,7 +302,7 @@ Create a test configuration:
 terraform {
   required_providers {
     bitbucketdc = {
-      source = "registry.terraform.io/alpina/bitbucket-dc"
+      source = "colab.internal.sldo.cloud/alpina/bitbucket-dc"
     }
   }
 }

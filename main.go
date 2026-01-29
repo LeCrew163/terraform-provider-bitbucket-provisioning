@@ -5,7 +5,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/alpina/terraform-provider-bitbucket-dc/internal/provider"
+	"bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/internal/provider"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 )
 
@@ -19,7 +19,7 @@ func main() {
 	flag.Parse()
 
 	opts := providerserver.ServeOpts{
-		Address: "registry.terraform.io/alpina/bitbucket-dc",
+		Address: "colab.internal.sldo.cloud/alpina/bitbucket-dc",
 		Debug:   debug,
 	}
 
