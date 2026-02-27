@@ -9,6 +9,41 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-02-27
+
+### Added
+
+#### `bitbucketdc_repository_hook` resource
+- Generic resource for managing any Bitbucket Data Center repository plugin hook (WORKFLOW → Hooks)
+- Works with any plugin that uses the Bitbucket hook framework, including **Webhook to Jenkins for Bitbucket Server** (`com.nerdwin15.stash-stash-webhook-jenkins:jenkinsPostReceiveHook`) and all built-in hooks
+- Attributes: `project_key`, `repository_slug`, `hook_key` (all `RequiresReplace`), `enabled` (default `true`), `settings_json`
+- `settings_json` accepts arbitrary JSON via `jsonencode()` — the exact fields are plugin-specific (e.g. `jenkinsBase`, `cloneType` for the Jenkins hook)
+- Settings are stored and compared as normalised (compact) JSON to avoid whitespace drift
+- Import by `project_key/repository_slug/hook_key`
+- Distinct from `bitbucketdc_webhook` which manages native Bitbucket webhooks (WORKFLOW → Webhooks)
+
+---
+
+## [0.5.0] — 2026-02-27
+
+### Added
+
+#### `bitbucketdc_webhook` resource
+- Manages Bitbucket DC native webhooks (WORKFLOW → Webhooks) at project or repository scope
+- Attributes: `project_key`, `repository_slug` (optional — omit for project scope), `name`, `url`, `events` (set), `active` (default `true`), `ssl_verification_required` (default `true`), `webhook_id` (computed)
+- Events stored as a set (unordered) to avoid ordering drift when Bitbucket returns events in a different order
+- Import by `project_key/webhook_id` (project scope) or `project_key/repository_slug/webhook_id` (repo scope)
+
+#### `bitbucketdc_default_reviewers` resource
+- Reconciliation resource for Bitbucket DC default reviewer conditions at project or repository scope
+- Each `condition` block defines a rule that automatically adds reviewers to matching pull requests
+- Condition attributes: `source_matcher_type`, `source_matcher_id`, `target_matcher_type`, `target_matcher_id`, `users` (list of usernames), `required_approvals`
+- Conditions identified by semantic key `(source_type|source_id|target_type|target_id)` — no stored API IDs
+- User slugs are resolved to full user objects (including numeric ID) via the SystemMaintenance API before being sent to Bitbucket
+- Import by `project_key` or `project_key/repository_slug`
+
+---
+
 ## [0.4.0] — 2026-02-27
 
 ### Added

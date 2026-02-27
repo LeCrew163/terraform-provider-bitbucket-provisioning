@@ -152,3 +152,23 @@ func (c *Client) NewAuthContext(ctx context.Context) context.Context {
 func (c *Client) GetBaseURL() string {
 	return c.baseURL
 }
+
+// GetHTTPClient returns the underlying HTTP client (for raw requests)
+func (c *Client) GetHTTPClient() *http.Client {
+	return c.httpClient
+}
+
+// GetUsername returns the configured username
+func (c *Client) GetUsername() string {
+	return c.username
+}
+
+// GetPassword returns the configured password
+func (c *Client) GetPassword() string {
+	return c.password
+}
+
+// GetToken returns the configured token
+func (c *Client) GetToken() string {
+	return c.token
+}

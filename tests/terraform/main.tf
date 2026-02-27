@@ -106,6 +106,50 @@ resource "bitbucketdc_repository_access_key" "frontend_deploy" {
   permission      = "REPO_READ"
 }
 
+# ── Repository hook (generic plugin hook management) ──────────────────────
+# Example: enable the built-in "Reject Force Push" hook.
+# Replace hook_key and settings_json for any other plugin hook
+# (e.g. Webhook to Jenkins for Bitbucket Server).
+resource "bitbucketdc_repository_hook" "force_push_protection" {
+  project_key     = bitbucketdc_project.test_private.key
+  repository_slug = bitbucketdc_repository.api.slug
+  hook_key        = "com.atlassian.bitbucket.server.bitbucket-bundled-hooks:force-push-hook"
+  enabled         = true
+  settings_json   = jsonencode({})
+}
+
+# ── Webhook resources ─────────────────────────────────────────────────────
+resource "bitbucketdc_webhook" "repo_hook" {
+  project_key              = bitbucketdc_project.test_private.key
+  repository_slug          = bitbucketdc_repository.api.slug
+  name                     = "CI Notification Hook"
+  url                      = "http://example.com/ci-hook"
+  events                   = ["repo:refs_changed", "pr:opened"]
+  active                   = true
+  ssl_verification_required = false
+}
+
+resource "bitbucketdc_webhook" "project_hook" {
+  project_key = bitbucketdc_project.test_private.key
+  name        = "Project Audit Hook"
+  url         = "http://example.com/audit-hook"
+  events      = ["repo:refs_changed"]
+}
+
+# ── Default reviewer conditions ───────────────────────────────────────────
+resource "bitbucketdc_default_reviewers" "test_private" {
+  project_key = bitbucketdc_project.test_private.key
+
+  condition {
+    source_matcher_type = "ANY_REF"
+    source_matcher_id   = "ANY_REF_MATCHER_ID"
+    target_matcher_type = "ANY_REF"
+    target_matcher_id   = "ANY_REF_MATCHER_ID"
+    users               = ["admin"]
+    required_approvals  = 1
+  }
+}
+
 # ── Data sources ──────────────────────────────────────────────────────────
 data "bitbucketdc_project" "test_private" {
   key        = bitbucketdc_project.test_private.key
@@ -190,4 +234,24 @@ output "ds_admin_display_name" {
 output "ds_group_name" {
   description = "Group name read back via data source"
   value       = data.bitbucketdc_group.stash_users.name
+}
+
+output "repo_webhook_id" {
+  description = "Numeric ID of the repository CI webhook"
+  value       = bitbucketdc_webhook.repo_hook.webhook_id
+}
+
+output "project_webhook_id" {
+  description = "Numeric ID of the project audit webhook"
+  value       = bitbucketdc_webhook.project_hook.webhook_id
+}
+
+output "default_reviewers_id" {
+  description = "ID of the default reviewer conditions resource"
+  value       = bitbucketdc_default_reviewers.test_private.id
+}
+
+output "force_push_hook_enabled" {
+  description = "Whether the force-push protection hook is enabled"
+  value       = bitbucketdc_repository_hook.force_push_protection.enabled
 }

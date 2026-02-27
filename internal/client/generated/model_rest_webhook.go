@@ -19,6 +19,8 @@ var _ MappedNullable = &RestWebhook{}
 
 // RestWebhook struct for RestWebhook
 type RestWebhook struct {
+	// Id is not included in the OpenAPI spec but Bitbucket DC returns it in all webhook responses.
+	Id *int64 `json:"id,omitempty"`
 	Active *bool `json:"active,omitempty"`
 	Configuration map[string]interface{} `json:"configuration,omitempty"`
 	Credentials *RestWebhookCredentials `json:"credentials,omitempty"`
@@ -28,6 +30,20 @@ type RestWebhook struct {
 	SslVerificationRequired *bool `json:"sslVerificationRequired,omitempty"`
 	Statistics map[string]interface{} `json:"statistics,omitempty"`
 	Url *string `json:"url,omitempty"`
+}
+
+// GetId returns the Id field value if set, zero value otherwise.
+func (o *RestWebhook) GetId() int64 {
+	if o == nil || IsNil(o.Id) {
+		var ret int64
+		return ret
+	}
+	return *o.Id
+}
+
+// HasId returns a boolean if the Id field has been set.
+func (o *RestWebhook) HasId() bool {
+	return o != nil && !IsNil(o.Id)
 }
 
 // NewRestWebhook instantiates a new RestWebhook object
