@@ -67,11 +67,16 @@ func NewClient(config Config) (*Client, error) {
 		},
 	}
 
-	// Wrap transport with retry logic
-	retryableTransport := NewRetryableTransport(baseTransport)
+	// Wrap transport with retry logic, then optionally with bearer auth.
+	// The bearer wrapper sits outermost so the token is never stored in any
+	// loggable map — it lives only in an unexported struct field.
+	var transport http.RoundTripper = NewRetryableTransport(baseTransport)
+	if config.Token != "" {
+		transport = &bearerTransport{token: config.Token, base: transport}
+	}
 
 	httpClient := &http.Client{
-		Transport: retryableTransport,
+		Transport: transport,
 		Timeout:   config.Timeout,
 	}
 
@@ -108,22 +113,31 @@ func (c *Client) GetAPIClient() *bitbucket.APIClient {
 	return c.client
 }
 
-// NewAuthContext creates a new context with authentication headers
+// NewAuthContext creates a new context with authentication headers.
+// Token auth is handled by the bearerTransport at the HTTP layer, so no
+// context value is needed for that path.
 func (c *Client) NewAuthContext(ctx context.Context) context.Context {
-	// Bitbucket Data Center supports HTTP Basic Auth
-	// Tokens can be used as username with empty password
 	if c.token != "" {
-		return context.WithValue(ctx, bitbucket.ContextBasicAuth, bitbucket.BasicAuth{
-			UserName: c.token,
-			Password: "",
-		})
+		return ctx
 	}
-
-	// Use basic authentication with username/password
 	return context.WithValue(ctx, bitbucket.ContextBasicAuth, bitbucket.BasicAuth{
 		UserName: c.username,
 		Password: c.password,
 	})
+}
+
+// bearerTransport injects Authorization: Bearer on every outgoing request.
+// The token is stored in an unexported field so it never appears in any
+// loggable configuration map.
+type bearerTransport struct {
+	token string
+	base  http.RoundTripper
+}
+
+func (t *bearerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	clone := req.Clone(req.Context())
+	clone.Header.Set("Authorization", "Bearer "+t.token)
+	return t.base.RoundTrip(clone)
 }
 
 // TestConnection performs a connectivity check to the Bitbucket instance

@@ -402,11 +402,11 @@ func (r *projectResource) ImportState(ctx context.Context, req resource.ImportSt
 type projectKeyValidator struct{}
 
 func (v *projectKeyValidator) Description(ctx context.Context) string {
-	return "Project key must be uppercase alphanumeric with underscores, 2-128 characters"
+	return "Project key must be uppercase alphanumeric with underscores or hyphens, 2-128 characters"
 }
 
 func (v *projectKeyValidator) MarkdownDescription(ctx context.Context) string {
-	return "Project key must be uppercase alphanumeric with underscores, 2-128 characters"
+	return "Project key must be uppercase alphanumeric with underscores or hyphens, 2-128 characters"
 }
 
 func (v *projectKeyValidator) ValidateString(ctx context.Context, req validator.StringRequest, resp *validator.StringResponse) {
@@ -420,8 +420,8 @@ func (v *projectKeyValidator) ValidateString(ctx context.Context, req validator.
 		resp.Diagnostics.AddAttributeError(
 			req.Path,
 			"Invalid Project Key",
-			fmt.Sprintf("Project key '%s' is invalid. Must be uppercase alphanumeric with underscores, 2-128 characters. "+
-				"Example: MYPROJ, MY_PROJECT, PROJ123", key),
+			fmt.Sprintf("Project key '%s' is invalid. Must be uppercase alphanumeric with underscores or hyphens, 2-128 characters. "+
+				"Example: MYPROJ, MY_PROJECT, ALPINA-SANDBOX", key),
 		)
 	}
 }
@@ -430,8 +430,8 @@ func (v *projectKeyValidator) ValidateString(ctx context.Context, req validator.
 func isValidProjectKey(key string) bool {
 	// Project key must be:
 	// - 2 to 128 characters
-	// - Uppercase letters, numbers, and underscores only
-	// - Cannot start with an underscore
-	match, _ := regexp.MatchString(`^[A-Z][A-Z0-9_]{1,127}$`, key)
+	// - Uppercase letters, numbers, underscores, and hyphens
+	// - Must start with an uppercase letter
+	match, _ := regexp.MatchString(`^[A-Z][A-Z0-9_-]{1,127}$`, key)
 	return match
 }
