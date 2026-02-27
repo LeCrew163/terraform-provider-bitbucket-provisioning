@@ -1,0 +1,24 @@
+---
+page_title: "Provider: Bitbucket Data Center"
+description: |-
+  The Bitbucket Data Center provider allows Terraform to manage projects, repositories, permissions, access keys, hooks, and webhooks on a self-hosted Bitbucket Data Center instance.
+---
+
+# Bitbucket Data Center Provider
+
+The **bitbucketdc** provider manages resources on a self-hosted [Bitbucket Data Center](https://www.atlassian.com/software/bitbucket/enterprise) instance via the REST API.
+
+## Authentication
+
+The provider supports two authentication methods (use one only):
+
+* **Personal Access Token** — recommended for automation.
+* **Username / Password** — HTTP Basic Authentication.
+
+Credentials can be supplied via provider attributes or environment variables.
+
+## Example Usage
+
+{{ tffile "examples/provider/provider.tf" }}
+
+{{ .SchemaMarkdown | trimspace }}

@@ -94,7 +94,7 @@ generate-client:
 
 .PHONY: docs
 docs:
-	tfplugindocs generate --provider-name bitbucket-dc
+	tfplugindocs generate --provider-name bitbucketdc
 
 # ── Module management ────────────────────────────────────────────────────────
 .PHONY: tidy
