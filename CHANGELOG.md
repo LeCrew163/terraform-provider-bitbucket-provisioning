@@ -9,6 +9,14 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `prevent_destroy` attribute on `bitbucketdc_project` and `bitbucketdc_repository`. Defaults to `true` — Terraform will refuse to delete these resources unless `prevent_destroy = false` is set explicitly in the resource block. This prevents accidental destruction of projects and repositories that contain real data.
+
+### Changed
+
+- Provider source address corrected to `art01.sldnet.de:8081/swisslife/bitbucket-provisioning` (was `alpina-operation`). Updated in `main.go`, `Makefile`, `.goreleaser.yml`, `jenkins/release.groovy`, and `tests/terraform/main.tf`.
+
 ## [0.10.0] — 2026-02-27
 
 ### Added

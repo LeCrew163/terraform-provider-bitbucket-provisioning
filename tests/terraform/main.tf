@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     bitbucketdc = {
-      source  = "art01.sldnet.de:8081/artifactory/api/terraform/terraform/alpina-operation/bitbucket-provisioning"
+      source  = "art01.sldnet.de:8081/swisslife/bitbucket-provisioning"
       version = "= 0.10.0"
     }
   }

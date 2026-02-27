@@ -29,7 +29,7 @@ pipeline {
                 script {
                     def version = sh(script: "git describe --tags --abbrev=0 | sed 's/^v//'", returnStdout: true).trim()
                     def binary  = 'terraform-provider-bitbucket-provisioning'
-                    def base    = "http://art01.sldnet.de:8081/artifactory/terraform/alpina-operation/bitbucket-provisioning/${version}"
+                    def base    = "http://art01.sldnet.de:8081/artifactory/terraform/swisslife/bitbucket-provisioning/${version}"
 
                     // Terraform requires a manifest.json alongside the zips so that the
                     // Artifactory registry can serve the provider protocol correctly.

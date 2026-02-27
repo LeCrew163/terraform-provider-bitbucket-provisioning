@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -37,11 +38,12 @@ type projectResource struct {
 
 // projectResourceModel maps the resource schema data.
 type projectResourceModel struct {
-	ID          types.String `tfsdk:"id"`
-	Key         types.String `tfsdk:"key"`
-	Name        types.String `tfsdk:"name"`
-	Description types.String `tfsdk:"description"`
-	Public      types.Bool   `tfsdk:"public"`
+	ID             types.String `tfsdk:"id"`
+	Key            types.String `tfsdk:"key"`
+	Name           types.String `tfsdk:"name"`
+	Description    types.String `tfsdk:"description"`
+	Public         types.Bool   `tfsdk:"public"`
+	PreventDestroy types.Bool   `tfsdk:"prevent_destroy"`
 }
 
 // Metadata returns the resource type name.
@@ -85,6 +87,13 @@ func (r *projectResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 					"Computed because Bitbucket always returns a value for this field.",
 				Optional: true,
 				Computed: true,
+			},
+			"prevent_destroy": schema.BoolAttribute{
+				Description: "When true (the default), Terraform will refuse to delete this project. " +
+					"Set to false explicitly to allow destruction.",
+				Optional: true,
+				Computed: true,
+				Default:  booldefault.StaticBool(true),
 			},
 		},
 	}
@@ -168,6 +177,11 @@ func (r *projectResource) Create(ctx context.Context, req resource.CreateRequest
 		plan.Public = types.BoolValue(false)
 	}
 
+	// prevent_destroy is a local-only flag; preserve the planned value.
+	if plan.PreventDestroy.IsNull() {
+		plan.PreventDestroy = types.BoolValue(true)
+	}
+
 	tflog.Debug(ctx, "Project created successfully", map[string]interface{}{
 		"id":  plan.ID.ValueString(),
 		"key": plan.Key.ValueString(),
@@ -221,6 +235,11 @@ func (r *projectResource) Read(ctx context.Context, req resource.ReadRequest, re
 		state.Public = types.BoolValue(*public)
 	} else {
 		state.Public = types.BoolValue(false)
+	}
+
+	// prevent_destroy is not stored in Bitbucket; keep whatever is already in state.
+	if state.PreventDestroy.IsNull() {
+		state.PreventDestroy = types.BoolValue(true)
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -292,6 +311,11 @@ func (r *projectResource) Update(ctx context.Context, req resource.UpdateRequest
 		plan.Public = types.BoolValue(false)
 	}
 
+	// prevent_destroy is a local-only flag; preserve the planned value.
+	if plan.PreventDestroy.IsNull() {
+		plan.PreventDestroy = types.BoolValue(true)
+	}
+
 	tflog.Debug(ctx, "Project updated successfully", map[string]interface{}{
 		"key": plan.Key.ValueString(),
 	})
@@ -304,6 +328,18 @@ func (r *projectResource) Delete(ctx context.Context, req resource.DeleteRequest
 	var state projectResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if state.PreventDestroy.IsNull() || state.PreventDestroy.ValueBool() {
+		resp.Diagnostics.AddError(
+			"Project Destruction Prevented",
+			fmt.Sprintf(
+				"Project %q has prevent_destroy = true (the default). "+
+					"Set prevent_destroy = false on this resource before running terraform destroy.",
+				state.Key.ValueString(),
+			),
+		)
 		return
 	}
 

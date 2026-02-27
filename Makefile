@@ -2,7 +2,7 @@ default: build
 
 # ── Build info ───────────────────────────────────────────────────────────────
 BINARY       := terraform-provider-bitbucket-provisioning
-PROVIDER_NS  := art01.sldnet.de:8081/artifactory/api/terraform/terraform/alpina-operation/bitbucket-provisioning
+PROVIDER_NS  := art01.sldnet.de:8081/swisslife/bitbucket-provisioning
 VERSION      := 0.10.0
 
 OS   := $(shell go env GOOS)
@@ -10,7 +10,7 @@ ARCH := $(shell go env GOARCH)
 PLUGIN_DIR := $(HOME)/.terraform.d/plugins/$(PROVIDER_NS)/$(VERSION)/$(OS)_$(ARCH)
 
 # Artifactory base path for provider releases (goreleaser uses lowercase os/arch)
-ARTIFACTORY_RELEASE := http://art01.sldnet.de:8081/artifactory/terraform/alpina-operation/bitbucket-provisioning
+ARTIFACTORY_RELEASE := http://art01.sldnet.de:8081/artifactory/terraform/swisslife/bitbucket-provisioning
 
 # ── Core ─────────────────────────────────────────────────────────────────────
 .PHONY: build

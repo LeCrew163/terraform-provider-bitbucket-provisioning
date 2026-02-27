@@ -68,6 +68,6 @@ changelog:
 # The manifest.json is generated and uploaded separately in the Jenkins pipeline.
 artifactories:
   - name: internal
-    target: 'http://art01.sldnet.de:8081/artifactory/terraform/alpina-operation/bitbucket-provisioning/{{ .Version }}/'
+    target: 'http://art01.sldnet.de:8081/artifactory/terraform/swisslife/bitbucket-provisioning/{{ .Version }}/'
     username: '{{ .Env.ARTIFACTORY_USERNAME }}'
     secret: '{{ .Env.ARTIFACTORY_SECRET }}'

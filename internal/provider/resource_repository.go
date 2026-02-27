@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
@@ -37,17 +38,18 @@ type repositoryResource struct {
 
 // repositoryResourceModel maps the resource schema data.
 type repositoryResourceModel struct {
-	ID            types.String `tfsdk:"id"`
-	ProjectKey    types.String `tfsdk:"project_key"`
-	Slug          types.String `tfsdk:"slug"`
-	Name          types.String `tfsdk:"name"`
-	Description   types.String `tfsdk:"description"`
-	Forkable      types.Bool   `tfsdk:"forkable"`
-	Public        types.Bool   `tfsdk:"public"`
-	DefaultBranch types.String `tfsdk:"default_branch"`
-	CloneURLHTTP  types.String `tfsdk:"clone_url_http"`
-	CloneURLSSH   types.String `tfsdk:"clone_url_ssh"`
-	State         types.String `tfsdk:"state"`
+	ID             types.String `tfsdk:"id"`
+	ProjectKey     types.String `tfsdk:"project_key"`
+	Slug           types.String `tfsdk:"slug"`
+	Name           types.String `tfsdk:"name"`
+	Description    types.String `tfsdk:"description"`
+	Forkable       types.Bool   `tfsdk:"forkable"`
+	Public         types.Bool   `tfsdk:"public"`
+	DefaultBranch  types.String `tfsdk:"default_branch"`
+	CloneURLHTTP   types.String `tfsdk:"clone_url_http"`
+	CloneURLSSH    types.String `tfsdk:"clone_url_ssh"`
+	State          types.String `tfsdk:"state"`
+	PreventDestroy types.Bool   `tfsdk:"prevent_destroy"`
 }
 
 // Metadata returns the resource type name.
@@ -123,6 +125,13 @@ func (r *repositoryResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				Description: "The repository state (e.g. AVAILABLE, INITIALISING).",
 				Computed:    true,
 			},
+			"prevent_destroy": schema.BoolAttribute{
+				Description: "When true (the default), Terraform will refuse to delete this repository. " +
+					"Set to false explicitly to allow destruction.",
+				Optional: true,
+				Computed: true,
+				Default:  booldefault.StaticBool(true),
+			},
 		},
 	}
 }
@@ -193,6 +202,11 @@ func (r *repositoryResource) Create(ctx context.Context, req resource.CreateRequ
 
 	mapRepoToState(plan.ProjectKey.ValueString(), repo, &plan)
 
+	// prevent_destroy is a local-only flag; preserve the planned value.
+	if plan.PreventDestroy.IsNull() {
+		plan.PreventDestroy = types.BoolValue(true)
+	}
+
 	tflog.Debug(ctx, "Repository created successfully", map[string]interface{}{
 		"id": plan.ID.ValueString(),
 	})
@@ -232,6 +246,12 @@ func (r *repositoryResource) Read(ctx context.Context, req resource.ReadRequest,
 	}
 
 	mapRepoToState(state.ProjectKey.ValueString(), repo, &state)
+
+	// prevent_destroy is not stored in Bitbucket; keep whatever is already in state.
+	if state.PreventDestroy.IsNull() {
+		state.PreventDestroy = types.BoolValue(true)
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -293,6 +313,11 @@ func (r *repositoryResource) Update(ctx context.Context, req resource.UpdateRequ
 
 	mapRepoToState(plan.ProjectKey.ValueString(), repo, &plan)
 
+	// prevent_destroy is a local-only flag; preserve the planned value.
+	if plan.PreventDestroy.IsNull() {
+		plan.PreventDestroy = types.BoolValue(true)
+	}
+
 	tflog.Debug(ctx, "Repository updated successfully", map[string]interface{}{
 		"id": plan.ID.ValueString(),
 	})
@@ -305,6 +330,18 @@ func (r *repositoryResource) Delete(ctx context.Context, req resource.DeleteRequ
 	var state repositoryResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if state.PreventDestroy.IsNull() || state.PreventDestroy.ValueBool() {
+		resp.Diagnostics.AddError(
+			"Repository Destruction Prevented",
+			fmt.Sprintf(
+				"Repository %q in project %q has prevent_destroy = true (the default). "+
+					"Set prevent_destroy = false on this resource before running terraform destroy.",
+				state.Slug.ValueString(), state.ProjectKey.ValueString(),
+			),
+		)
 		return
 	}
 
