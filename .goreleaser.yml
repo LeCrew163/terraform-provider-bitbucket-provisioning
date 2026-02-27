@@ -55,7 +55,7 @@ signs:
 release:
   github:
     owner: alpina
-    name: terraform-provider-bitbucket-dc
+    name: terraform-provider-bitbucket-provisioning
   draft: false
   prerelease: auto
   mode: replace

@@ -1,8 +1,8 @@
 terraform {
   required_providers {
     bitbucketdc = {
-      source  = "colab.internal.sldo.cloud/alpina/bitbucket-dc"
-      version = "~> 0.1"
+      source  = "bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning"
+      version = "= 0.10.0"
     }
   }
 }
@@ -116,6 +116,14 @@ resource "bitbucketdc_repository_hook" "force_push_protection" {
   hook_key        = "com.atlassian.bitbucket.server.bitbucket-bundled-hooks:force-push-hook"
   enabled         = true
   settings_json   = jsonencode({})
+}
+
+# ── Project hook (applies to all repos in the project) ────────────────────
+resource "bitbucketdc_project_hook" "force_push_protection" {
+  project_key = bitbucketdc_project.test_private.key
+  hook_key    = "com.atlassian.bitbucket.server.bitbucket-bundled-hooks:force-push-hook"
+  enabled     = true
+  settings_json = jsonencode({})
 }
 
 # ── Webhook resources ─────────────────────────────────────────────────────

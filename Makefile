@@ -1,9 +1,9 @@
 default: build
 
 # ── Build info ───────────────────────────────────────────────────────────────
-BINARY       := terraform-provider-bitbucket-dc
-PROVIDER_NS  := colab.internal.sldo.cloud/alpina/bitbucket-dc
-VERSION      := 0.1.0
+BINARY       := terraform-provider-bitbucket-provisioning
+PROVIDER_NS  := bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning
+VERSION      := 0.10.0
 
 OS   := $(shell go env GOOS)
 ARCH := $(shell go env GOARCH)

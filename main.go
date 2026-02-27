@@ -19,7 +19,7 @@ func main() {
 	flag.Parse()
 
 	opts := providerserver.ServeOpts{
-		Address: "colab.internal.sldo.cloud/alpina/bitbucket-dc",
+		Address: "bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning",
 		Debug:   debug,
 	}
 
