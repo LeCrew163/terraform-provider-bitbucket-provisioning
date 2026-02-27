@@ -170,6 +170,15 @@ data "bitbucketdc_group" "stash_users" {
   name = "stash-users"
 }
 
+data "bitbucketdc_projects" "all" {
+  depends_on = [bitbucketdc_project.test_private]
+}
+
+data "bitbucketdc_repositories" "all_in_private" {
+  project_key = bitbucketdc_project.test_private.key
+  depends_on  = [bitbucketdc_repository.api]
+}
+
 # ── Outputs ────────────────────────────────────────────────────────────────
 output "private_project_id" {
   description = "Numeric ID of the private test project"
@@ -254,4 +263,14 @@ output "default_reviewers_id" {
 output "force_push_hook_enabled" {
   description = "Whether the force-push protection hook is enabled"
   value       = bitbucketdc_repository_hook.force_push_protection.enabled
+}
+
+output "ds_projects_count" {
+  description = "Number of projects returned by the projects data source"
+  value       = length(data.bitbucketdc_projects.all.projects)
+}
+
+output "ds_repos_count" {
+  description = "Number of repositories in the private project"
+  value       = length(data.bitbucketdc_repositories.all_in_private.repositories)
 }

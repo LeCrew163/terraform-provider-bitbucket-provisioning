@@ -247,6 +247,8 @@ func (p *bitbucketdcProvider) DataSources(_ context.Context) []func() datasource
 		NewRepositoryDataSource,
 		NewUserDataSource,
 		NewGroupDataSource,
+		NewProjectsDataSource,
+		NewRepositoriesDataSource,
 	}
 }
 
