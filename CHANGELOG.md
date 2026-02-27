@@ -9,6 +9,60 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Planned
+
+#### `prevent_destroy` guard for destructive resources
+
+`bitbucketdc_project` and `bitbucketdc_repository` resources should default to
+safe-delete behaviour to prevent accidental data loss.
+
+**Proposed design:**
+
+- Add an optional `prevent_destroy` boolean attribute to `bitbucketdc_project`
+  and `bitbucketdc_repository` (default `true`).
+- When `prevent_destroy = true` the provider's `Delete` function returns an
+  error immediately, blocking `terraform destroy` / resource replacement before
+  it reaches the API.
+- To destroy a resource the operator must:
+  1. Set `prevent_destroy = false` in the configuration.
+  2. Run `terraform apply` (updates state — no API call, attribute is
+     provider-side only).
+  3. Run `terraform destroy` (or trigger replacement).
+- This is a **provider-level guard**, distinct from Terraform's built-in
+  `lifecycle { prevent_destroy = true }` meta-argument (which lives only in
+  config and can be silently bypassed by removing the block before running
+  destroy).
+- The attribute should be `Optional`, `Default: true`, and should NOT trigger
+  resource replacement when toggled (use `planmodifier` that suppresses the
+  diff without replace).
+- On import the attribute should default to `true` so imported resources are
+  protected immediately.
+- Consider extending the same guard to `bitbucketdc_branch_permissions` and
+  `bitbucketdc_project_permissions` if destruction is also considered risky
+  there.
+
+---
+
+## [0.2.0] — 2026-02-27
+
+### Added
+
+#### `bitbucketdc_project_access_key` resource
+- Full CRUD lifecycle management for SSH access keys at the Bitbucket DC project level
+- Attributes: `project_key` (required, immutable), `public_key` (required, immutable), `label` (optional+computed, immutable), `permission` (required, updatable)
+- Computed attributes: `key_id` (server-assigned numeric id), `fingerprint`, `id` (`{project_key}/{key_id}`)
+- `label` is Optional+Computed: Bitbucket auto-derives a label from the SSH key comment when none is supplied
+- Permission is updatable in-place via `UpdatePermission` API; all other changes force resource replacement
+- Plan-time permission validation: only `PROJECT_READ` and `PROJECT_WRITE` are accepted
+- Import by `project_key/key_id`: `terraform import bitbucketdc_project_access_key.name PROJ/42`
+- Handles Bitbucket API quirk: generated client fails to unmarshal `AddForProject` response due to `DisallowUnknownFields` on nested type — recovers by listing keys and finding by public key text
+- Root-cause fix: `AddSshKeyRequest.CreatedDate` changed from `*time.Time` to `*int64` — the API returns a Unix millisecond timestamp (integer), which Go's `time.Time` JSON unmarshaler rejects
+- Acceptance tests: basic lifecycle (create with label → import → update permission), no-label config, invalid permission plan-only validation
+
+### Fixed
+
+- `internal/client/generated/model_add_ssh_key_request.go`: Changed `CreatedDate` field type from `*time.Time` to `*int64` to match the actual Bitbucket API response (Unix milliseconds), preventing JSON unmarshal failures across all access key read/list operations
+
 ## [0.1.0] — 2026-02-27
 
 ### Added

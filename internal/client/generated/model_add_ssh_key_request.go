@@ -12,7 +12,6 @@ package bitbucket
 
 import (
 	"encoding/json"
-	"time"
 )
 
 // checks if the AddSshKeyRequest type satisfies the MappedNullable interface at compile time
@@ -22,7 +21,8 @@ var _ MappedNullable = &AddSshKeyRequest{}
 type AddSshKeyRequest struct {
 	AlgorithmType *string `json:"algorithmType,omitempty"`
 	BitLength *int32 `json:"bitLength,omitempty"`
-	CreatedDate *time.Time `json:"createdDate,omitempty"`
+	// Unix millisecond timestamp; stored as int64 to avoid time.Time RFC-3339 unmarshal mismatch.
+	CreatedDate *int64 `json:"createdDate,omitempty"`
 	ExpiryDays *int32 `json:"expiryDays,omitempty"`
 	Fingerprint *string `json:"fingerprint,omitempty"`
 	Id *int32 `json:"id,omitempty"`
@@ -115,9 +115,9 @@ func (o *AddSshKeyRequest) SetBitLength(v int32) {
 }
 
 // GetCreatedDate returns the CreatedDate field value if set, zero value otherwise.
-func (o *AddSshKeyRequest) GetCreatedDate() time.Time {
+func (o *AddSshKeyRequest) GetCreatedDate() int64 {
 	if o == nil || IsNil(o.CreatedDate) {
-		var ret time.Time
+		var ret int64
 		return ret
 	}
 	return *o.CreatedDate
@@ -125,7 +125,7 @@ func (o *AddSshKeyRequest) GetCreatedDate() time.Time {
 
 // GetCreatedDateOk returns a tuple with the CreatedDate field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *AddSshKeyRequest) GetCreatedDateOk() (*time.Time, bool) {
+func (o *AddSshKeyRequest) GetCreatedDateOk() (*int64, bool) {
 	if o == nil || IsNil(o.CreatedDate) {
 		return nil, false
 	}
@@ -141,8 +141,8 @@ func (o *AddSshKeyRequest) HasCreatedDate() bool {
 	return false
 }
 
-// SetCreatedDate gets a reference to the given time.Time and assigns it to the CreatedDate field.
-func (o *AddSshKeyRequest) SetCreatedDate(v time.Time) {
+// SetCreatedDate gets a reference to the given int64 and assigns it to the CreatedDate field.
+func (o *AddSshKeyRequest) SetCreatedDate(v int64) {
 	o.CreatedDate = &v
 }
 

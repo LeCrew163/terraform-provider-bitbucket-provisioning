@@ -78,6 +78,14 @@ resource "bitbucketdc_branch_permissions" "test_private" {
   }
 }
 
+# ── Test: project SSH access key ──────────────────────────────────────────
+resource "bitbucketdc_project_access_key" "ci_pipeline" {
+  project_key = bitbucketdc_project.test_private.key
+  public_key  = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHj27twPopsFRMno1cyptyxbcKG3zSlFq7oCWPzWzlyP test-ci-pipeline"
+  label       = "CI Pipeline Read Key"
+  permission  = "PROJECT_READ"
+}
+
 # ── Outputs ────────────────────────────────────────────────────────────────
 output "private_project_id" {
   description = "Numeric ID of the private test project"
@@ -112,4 +120,14 @@ output "api_repo_clone_http" {
 output "frontend_repo_slug" {
   description = "Slug of the frontend repository"
   value       = bitbucketdc_repository.frontend.slug
+}
+
+output "ci_pipeline_key_id" {
+  description = "Numeric ID of the CI Pipeline project access key"
+  value       = bitbucketdc_project_access_key.ci_pipeline.key_id
+}
+
+output "ci_pipeline_key_fingerprint" {
+  description = "Fingerprint of the CI Pipeline project access key"
+  value       = bitbucketdc_project_access_key.ci_pipeline.fingerprint
 }
