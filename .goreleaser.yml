@@ -16,7 +16,6 @@ builds:
       - '-s -w -X main.version={{.Version}}'
     goos:
       - linux
-      - windows
       - darwin
     goarch:
       - amd64
@@ -26,8 +25,6 @@ builds:
       - '7'
     ignore:
       - goos: darwin
-        goarch: arm
-      - goos: windows
         goarch: arm
     binary: '{{ .ProjectName }}_v{{ .Version }}'
 
