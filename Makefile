@@ -94,7 +94,7 @@ generate-client:
 
 .PHONY: docs
 docs:
-	tfplugindocs generate --provider-name bitbucketdc
+	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@latest generate --provider-name bitbucketdc
 
 # ── Module management ────────────────────────────────────────────────────────
 .PHONY: tidy
