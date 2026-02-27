@@ -86,6 +86,26 @@ resource "bitbucketdc_project_access_key" "ci_pipeline" {
   permission  = "PROJECT_READ"
 }
 
+# ── Test: repository-level permissions ────────────────────────────────────
+resource "bitbucketdc_repository_permissions" "api" {
+  project_key     = bitbucketdc_project.test_private.key
+  repository_slug = bitbucketdc_repository.api.slug
+
+  user {
+    name       = "admin"
+    permission = "REPO_ADMIN"
+  }
+}
+
+# ── Test: repository SSH access key ───────────────────────────────────────
+resource "bitbucketdc_repository_access_key" "frontend_deploy" {
+  project_key     = bitbucketdc_project.test_private.key
+  repository_slug = bitbucketdc_repository.frontend.slug
+  public_key      = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOg1UJ5c9DFlej9e6jLiv3X8YL4e0eCH75dwG+VrtP8q test-deploy-key"
+  label           = "Frontend Deploy Key"
+  permission      = "REPO_READ"
+}
+
 # ── Outputs ────────────────────────────────────────────────────────────────
 output "private_project_id" {
   description = "Numeric ID of the private test project"

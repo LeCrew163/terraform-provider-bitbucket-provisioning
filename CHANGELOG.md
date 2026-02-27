@@ -9,6 +9,28 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-02-27
+
+### Added
+
+#### `bitbucketdc_repository_permissions` resource
+- Full reconciliation lifecycle for user and group permissions at the repository level
+- Attributes: `project_key` (required, immutable), `repository_slug` (required, immutable)
+- Nested blocks: `user { name, permission }` and `group { name, permission }`
+- Permission levels: `REPO_READ`, `REPO_WRITE`, `REPO_ADMIN`
+- Reconciliation: grants missing permissions, updates changed ones, revokes removed ones
+- Import by `project_key/repository_slug`: `terraform import bitbucketdc_repository_permissions.name PROJ/my-repo`
+- Acceptance tests: basic lifecycle (create → import → update level → empty), invalid permission plan
+
+#### `bitbucketdc_repository_access_key` resource
+- Full CRUD lifecycle management for SSH access keys at the repository level
+- Attributes: `project_key` (required, immutable), `repository_slug` (required, immutable), `public_key` (required, immutable), `label` (optional+computed, immutable), `permission` (required, updatable)
+- Computed attributes: `key_id`, `fingerprint`, `id` (`{project_key}/{repository_slug}/{key_id}`)
+- Permission levels: `REPO_READ`, `REPO_WRITE`
+- Same 2xx+unmarshal recovery pattern as `bitbucketdc_project_access_key`
+- Import by `project_key/repository_slug/key_id`: `terraform import bitbucketdc_repository_access_key.name PROJ/my-repo/42`
+- Acceptance tests: basic lifecycle (create with label → import → update permission), no-label config, invalid permission plan
+
 ### Planned
 
 #### `prevent_destroy` guard for destructive resources

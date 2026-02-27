@@ -255,6 +255,8 @@ func (p *bitbucketdcProvider) Resources(_ context.Context) []func() resource.Res
 		NewProjectPermissionsResource,
 		NewBranchPermissionsResource,
 		NewProjectAccessKeyResource,
+		NewRepositoryPermissionsResource,
+		NewRepositoryAccessKeyResource,
 	}
 }
 
