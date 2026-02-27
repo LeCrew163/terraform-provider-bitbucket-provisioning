@@ -7,7 +7,11 @@ VERSION      := 0.10.0
 
 OS   := $(shell go env GOOS)
 ARCH := $(shell go env GOARCH)
+# Goreleaser capitalises the OS name in archive filenames (e.g. Darwin, Linux)
+OS_CAP := $(shell go env GOOS | sed 's/^./\u&/')
 PLUGIN_DIR := $(HOME)/.terraform.d/plugins/$(PROVIDER_NS)/$(VERSION)/$(OS)_$(ARCH)
+
+ARTIFACTORY_BASE := http://art01.sldnet.de:8081/artifactory/terraform
 
 # ── Core ─────────────────────────────────────────────────────────────────────
 .PHONY: build
@@ -18,6 +22,22 @@ build:
 install: build
 	mkdir -p $(PLUGIN_DIR)
 	cp $(BINARY) $(PLUGIN_DIR)/
+
+# Download a released binary from Artifactory and install it locally.
+# Usage: make install-remote VERSION=0.10.0
+.PHONY: install-remote
+install-remote:
+	@if [ -z "$(VERSION)" ]; then echo "Usage: make install-remote VERSION=x.y.z"; exit 1; fi
+	$(eval REMOTE_ZIP := $(BINARY)_$(VERSION)_$(OS_CAP)_$(ARCH).zip)
+	$(eval REMOTE_URL := $(ARTIFACTORY_BASE)/$(BINARY)/$(VERSION)/$(REMOTE_ZIP))
+	$(eval REMOTE_PLUGIN_DIR := $(HOME)/.terraform.d/plugins/$(PROVIDER_NS)/$(VERSION)/$(OS)_$(ARCH))
+	@echo "Downloading $(REMOTE_URL) ..."
+	@curl -fSL "$(REMOTE_URL)" -o /tmp/$(REMOTE_ZIP)
+	@mkdir -p $(REMOTE_PLUGIN_DIR)
+	@unzip -o /tmp/$(REMOTE_ZIP) "$(BINARY)_v$(VERSION)" -d $(REMOTE_PLUGIN_DIR)/
+	@mv $(REMOTE_PLUGIN_DIR)/$(BINARY)_v$(VERSION) $(REMOTE_PLUGIN_DIR)/$(BINARY)
+	@rm /tmp/$(REMOTE_ZIP)
+	@echo "Installed $(BINARY) v$(VERSION) → $(REMOTE_PLUGIN_DIR)"
 
 .PHONY: clean
 clean:
@@ -118,6 +138,7 @@ help:
 	@echo "Core:"
 	@echo "  build            Build the provider binary ($(BINARY))"
 	@echo "  install          Build and install to $(PLUGIN_DIR)"
+	@echo "  install-remote   Download released binary from Artifactory (VERSION=x.y.z)"
 	@echo "  clean            Remove build artifacts"
 	@echo ""
 	@echo "Tests:"

@@ -1,5 +1,7 @@
 version: 2
 
+project_name: terraform-provider-bitbucket-provisioning
+
 before:
   hooks:
     - go mod tidy
@@ -41,28 +43,12 @@ checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
   algorithm: sha256
 
-signs:
-  - artifacts: checksum
-    args:
-      - "--batch"
-      - "--local-user"
-      - "{{ .Env.GPG_FINGERPRINT }}"
-      - "--output"
-      - "${signature}"
-      - "--detach-sign"
-      - "${artifact}"
-
+# No GitHub/GitLab release — binaries are distributed via Artifactory
 release:
-  github:
-    owner: alpina
-    name: terraform-provider-bitbucket-provisioning
-  draft: false
-  prerelease: auto
-  mode: replace
-  name_template: "v{{.Version}}"
+  disable: true
 
 changelog:
-  use: github
+  use: git
   sort: asc
   filters:
     exclude:
@@ -79,3 +65,10 @@ changelog:
       order: 1
     - title: 'Others'
       order: 999
+
+# Upload zip archives and checksums to Artifactory after every release
+artifactories:
+  - name: internal
+    target: 'http://art01.sldnet.de:8081/artifactory/terraform/{{ .ProjectName }}/{{ .Version }}/'
+    username: '{{ .Env.ARTIFACTORY_USERNAME }}'
+    secret: '{{ .Env.ARTIFACTORY_SECRET }}'

@@ -2,9 +2,8 @@ pipeline {
     agent any
 
     environment {
-        GOPATH       = "${WORKSPACE}/.go"
-        PATH         = "${WORKSPACE}/.go/bin:${PATH}"
-        GITHUB_TOKEN = credentials('github-token')
+        GOPATH = "${WORKSPACE}/.go"
+        PATH   = "${WORKSPACE}/.go/bin:${PATH}"
     }
 
     stages {
@@ -15,6 +14,10 @@ pipeline {
         }
 
         stage('Release') {
+            environment {
+                ARTIFACTORY_USERNAME = credentials('artifactory-username')
+                ARTIFACTORY_SECRET   = credentials('artifactory-secret')
+            }
             steps {
                 sh '''
                     if ! command -v goreleaser &>/dev/null; then
