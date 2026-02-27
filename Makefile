@@ -2,16 +2,15 @@ default: build
 
 # ── Build info ───────────────────────────────────────────────────────────────
 BINARY       := terraform-provider-bitbucket-provisioning
-PROVIDER_NS  := bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning
+PROVIDER_NS  := art01.sldnet.de:8081/artifactory/api/terraform/terraform/alpina-operation/bitbucket-provisioning
 VERSION      := 0.10.0
 
 OS   := $(shell go env GOOS)
 ARCH := $(shell go env GOARCH)
-# Goreleaser capitalises the OS name in archive filenames (e.g. Darwin, Linux)
-OS_CAP := $(shell go env GOOS | sed 's/^./\u&/')
 PLUGIN_DIR := $(HOME)/.terraform.d/plugins/$(PROVIDER_NS)/$(VERSION)/$(OS)_$(ARCH)
 
-ARTIFACTORY_BASE := http://art01.sldnet.de:8081/artifactory/terraform
+# Artifactory base path for provider releases (goreleaser uses lowercase os/arch)
+ARTIFACTORY_RELEASE := http://art01.sldnet.de:8081/artifactory/terraform/alpina-operation/bitbucket-provisioning
 
 # ── Core ─────────────────────────────────────────────────────────────────────
 .PHONY: build
@@ -24,12 +23,14 @@ install: build
 	cp $(BINARY) $(PLUGIN_DIR)/
 
 # Download a released binary from Artifactory and install it locally.
+# Use this when you don't have Go installed or want to pin to an exact release.
+# With terraform init, the provider is downloaded automatically from Artifactory.
 # Usage: make install-remote VERSION=0.10.0
 .PHONY: install-remote
 install-remote:
 	@if [ -z "$(VERSION)" ]; then echo "Usage: make install-remote VERSION=x.y.z"; exit 1; fi
-	$(eval REMOTE_ZIP := $(BINARY)_$(VERSION)_$(OS_CAP)_$(ARCH).zip)
-	$(eval REMOTE_URL := $(ARTIFACTORY_BASE)/$(BINARY)/$(VERSION)/$(REMOTE_ZIP))
+	$(eval REMOTE_ZIP := $(BINARY)_$(VERSION)_$(OS)_$(ARCH).zip)
+	$(eval REMOTE_URL := $(ARTIFACTORY_RELEASE)/$(VERSION)/$(REMOTE_ZIP))
 	$(eval REMOTE_PLUGIN_DIR := $(HOME)/.terraform.d/plugins/$(PROVIDER_NS)/$(VERSION)/$(OS)_$(ARCH))
 	@echo "Downloading $(REMOTE_URL) ..."
 	@curl -fSL "$(REMOTE_URL)" -o /tmp/$(REMOTE_ZIP)

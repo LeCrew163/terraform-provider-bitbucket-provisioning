@@ -19,7 +19,7 @@ func main() {
 	flag.Parse()
 
 	opts := providerserver.ServeOpts{
-		Address: "bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning",
+		Address: "art01.sldnet.de:8081/artifactory/api/terraform/terraform/alpina-operation/bitbucket-provisioning",
 		Debug:   debug,
 	}
 

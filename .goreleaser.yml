@@ -43,7 +43,7 @@ checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
   algorithm: sha256
 
-# No GitHub/GitLab release — binaries are distributed via Artifactory
+# No GitHub/GitLab release — distributed via Artifactory Terraform registry
 release:
   disable: true
 
@@ -66,9 +66,11 @@ changelog:
     - title: 'Others'
       order: 999
 
-# Upload zip archives and checksums to Artifactory after every release
+# Upload zip archives + checksums to Artifactory.
+# Path mirrors the registry layout: terraform/<namespace>/<type>/<version>/
+# The manifest.json is generated and uploaded separately in the Jenkins pipeline.
 artifactories:
   - name: internal
-    target: 'http://art01.sldnet.de:8081/artifactory/terraform/{{ .ProjectName }}/{{ .Version }}/'
+    target: 'http://art01.sldnet.de:8081/artifactory/terraform/alpina-operation/bitbucket-provisioning/{{ .Version }}/'
     username: '{{ .Env.ARTIFACTORY_USERNAME }}'
     secret: '{{ .Env.ARTIFACTORY_SECRET }}'
