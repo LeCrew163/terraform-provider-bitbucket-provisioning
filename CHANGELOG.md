@@ -9,6 +9,37 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.9.0] — 2026-02-27
+
+### Added
+
+#### CI/CD — `jenkins/` pipeline folder
+- `jenkins/ci.groovy` — Build, Lint, and Unit Tests; runs on every commit
+- `jenkins/cd.groovy` — Build and Acceptance Tests against a live Bitbucket instance (parameterised via `RUN_ACC_TESTS`); requires Jenkins credentials `bitbucket-base-url`, `bitbucket-username`, `bitbucket-password`
+- `jenkins/release.groovy` — Build and GoReleaser publish; requires `github-token` credential
+
+#### Provider Documentation
+- Generated `docs/` directory using `tfplugindocs` — includes `index.md`, resource docs, and data source docs
+- `make docs` target in Makefile uses `tfplugindocs generate --provider-name bitbucketdc`
+- `templates/index.md.tmpl` provides the provider overview page
+
+## [0.8.0] — 2026-02-27
+
+### Added
+
+#### `data.bitbucketdc_projects` data source
+- Lists all Bitbucket Data Center projects accessible to the authenticated user
+- Optional `filter` attribute for case-insensitive name substring matching
+- Full pagination support — fetches all pages automatically
+- Exposes per-project attributes: `id`, `key`, `name`, `description`, `public`
+
+#### `data.bitbucketdc_repositories` data source
+- Lists all repositories within a given Bitbucket Data Center project
+- Required `project_key` attribute; optional `filter` for case-insensitive name substring matching
+- Full pagination support — fetches all pages automatically
+- Returns 404 error if the specified project does not exist
+- Exposes per-repository attributes: `id`, `slug`, `name`, `description`, `public`, `state`, `forkable`, `default_branch`, `clone_url_http`, `clone_url_ssh`
+
 ## [0.7.0] — 2026-02-27
 
 ### Added
