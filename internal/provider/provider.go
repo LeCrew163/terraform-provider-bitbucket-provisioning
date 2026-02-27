@@ -263,6 +263,7 @@ func (p *bitbucketdcProvider) Resources(_ context.Context) []func() resource.Res
 		NewWebhookResource,
 		NewDefaultReviewersResource,
 		NewRepositoryHookResource,
+		NewProjectHookResource,
 	}
 }
 

@@ -9,6 +9,18 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.7.0] — 2026-02-27
+
+### Added
+
+#### `bitbucketdc_project_hook` resource
+- Generic resource for managing any Bitbucket Data Center **project-level** plugin hook (WORKFLOW → Hooks on the project)
+- Project hooks apply to all repositories within the project — the primary use-case for Webhook to Jenkins
+- Same interface as `bitbucketdc_repository_hook`: `project_key`, `hook_key`, `enabled`, `settings_json`
+- Import by `project_key/hook_key`
+
+---
+
 ## [0.6.0] — 2026-02-27
 
 ### Added
