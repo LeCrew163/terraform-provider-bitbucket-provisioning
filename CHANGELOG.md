@@ -9,6 +9,17 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.10.0] — 2026-02-27
+
+### Added
+
+#### Provider Documentation — usage examples
+- Added `## Example Usage` sections to all resource and data source docs
+- `examples/resources/bitbucketdc_*/resource.tf` — realistic usage examples for all 11 resources
+- `examples/data-sources/bitbucketdc_*/data-source.tf` — usage examples for all 6 data sources
+- `docs/` directory is now tracked in version control (removed from `.gitignore`)
+- `make docs` target updated to use `go run` so no local `tfplugindocs` install is required
+
 ## [0.9.0] — 2026-02-27
 
 ### Added
@@ -244,4 +255,13 @@ safe-delete behaviour to prevent accidental data loss.
 - End-to-end test script (`scripts/test-local.sh`) with plan/apply/drift-check/destroy cycle
 - Terraform test configuration (`tests/terraform/`) covering all four resource types
 
+[0.10.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.9.0..v0.10.0
+[0.9.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.8.0..v0.9.0
+[0.8.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.7.0..v0.8.0
+[0.7.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.6.0..v0.7.0
+[0.6.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.5.0..v0.6.0
+[0.5.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.4.0..v0.5.0
+[0.4.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.3.0..v0.4.0
+[0.3.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.2.0..v0.3.0
+[0.2.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.1.0..v0.2.0
 [0.1.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/commits/tag/v0.1.0
