@@ -44,9 +44,6 @@ dist/
 .DS_Store
 Thumbs.db
 
-# Documentation build artifacts
-docs/
-
 # Environment files
 .env
 .envrc
