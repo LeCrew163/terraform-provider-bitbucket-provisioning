@@ -81,8 +81,10 @@ func (r *projectResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Optional:    true,
 			},
 			"public": schema.BoolAttribute{
-				Description: "Whether the project is public. Defaults to false (private).",
-				Optional:    true,
+				Description: "Whether the project is public. Defaults to false (private). " +
+					"Computed because Bitbucket always returns a value for this field.",
+				Optional: true,
+				Computed: true,
 			},
 		},
 	}
@@ -150,7 +152,7 @@ func (r *projectResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	// Map response to state
-	plan.ID = types.StringValue(fmt.Sprintf("%d", project.GetId()))
+	plan.ID = types.StringValue(project.GetKey())
 	plan.Key = types.StringValue(project.GetKey())
 	plan.Name = types.StringValue(project.GetName())
 
@@ -205,7 +207,7 @@ func (r *projectResource) Read(ctx context.Context, req resource.ReadRequest, re
 	}
 
 	// Update state
-	state.ID = types.StringValue(fmt.Sprintf("%d", project.GetId()))
+	state.ID = types.StringValue(project.GetKey())
 	state.Key = types.StringValue(project.GetKey())
 	state.Name = types.StringValue(project.GetName())
 
@@ -274,7 +276,7 @@ func (r *projectResource) Update(ctx context.Context, req resource.UpdateRequest
 	}
 
 	// Update state
-	plan.ID = types.StringValue(fmt.Sprintf("%d", project.GetId()))
+	plan.ID = types.StringValue(project.GetKey())
 	plan.Key = types.StringValue(project.GetKey())
 	plan.Name = types.StringValue(project.GetName())
 

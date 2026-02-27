@@ -1,0 +1,74 @@
+# Local Bitbucket Data Center instance for provider development and testing.
+#
+# A public Atlassian timebomb license (10 users, resets every 3 h on restart) is
+# embedded as the default for SETUP_LICENSE so the instance starts fully automated
+# with no manual steps. Source:
+#   https://developer.atlassian.com/platform/marketplace/timebomb-licenses-for-testing-server-apps/
+#
+# Usage:
+#   docker compose up -d          # start (uses embedded timebomb license)
+#   docker compose logs -f        # tail logs; wait for "Server startup in"
+#   docker compose down -v        # stop and wipe volumes
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bitbucket-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bitbucket
+      POSTGRES_USER: bitbucket
+      POSTGRES_PASSWORD: bitbucket
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bitbucket -d bitbucket"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  bitbucket:
+    image: atlassian/bitbucket:9
+    container_name: bitbucket
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Automated first-run setup.
+      # The default is a public Atlassian timebomb license (resets on restart).
+      # Override by setting BITBUCKET_LICENSE in your environment or .env.local.
+      SETUP_DISPLAYNAME: "Bitbucket Local Test"
+      SETUP_BASEURL: "http://localhost:7990"
+      SETUP_LICENSE: "${BITBUCKET_LICENSE:-AAABrQ0ODAoPeNp9kVFvmzAQx9/9KSztLZIJZIu0RkJqA6yNViAK0G3d+uDApXgjNrKPbPn2dYG0a6fuwS8+393v//O7vAMa8yN1PerOFrPZYn5GL+OczlzvI0m6/RZ0uisMaON7LgmURF5iwvfgVy3XWpj6nGPDjRFcOqXaE4Pc1M61KEEayI8t9I+DNI6jTbC6uP73wd/FdafLmhsIOYL/yMDcOXM98p95Yyn60wp97PvW769OpFHMRfMWagb6AHoV+svLs5x9LW4+sM+3t1ds6XpfRkw7jwcgEbSPugOSdVtTatGiUHK4mUwmSZqzT+mGrTdpWAT5Kk1YkUW24AcaLFBFt0eKNdARlUayVBVo2mr1E0qk32vE9sdiOr1XzgvEaTN0MBg67hwaKioV0koY1GLbIdjJwlBUtOwMqr39KYfY1JZZclm+9jLEsmbEAZ4CBJvoIo9Ctvz2CP2GrRHe6irkL6l+S5JFiW8Pm7suSfU9l8LwXkwIB2hUaxPmYPAUm/Q2bP315w5MGXL95DmEZ839jFEE3SlNedvS6rTCkOjAm25YvOON3fMAVTj4nTAtAhRH4o+fI5MQ7xSh2mtA1bPJrq0WAgIVAIGperR8m2N0fl/GfUUJfQnd+T1aX02kk}"
+      SETUP_SYSADMIN_USERNAME: "admin"
+      SETUP_SYSADMIN_PASSWORD: "${BITBUCKET_ADMIN_PASSWORD:-admin}"
+      SETUP_SYSADMIN_DISPLAYNAME: "Administrator"
+      SETUP_SYSADMIN_EMAILADDRESS: "admin@example.local"
+      # PostgreSQL database
+      # Env var names map to bitbucket.properties keys via Spring relaxed binding:
+      # JDBC_DRIVER → jdbc.driver, JDBC_URL → jdbc.url, JDBC_USER → jdbc.user, JDBC_PASSWORD → jdbc.password
+      JDBC_DRIVER: "org.postgresql.Driver"
+      JDBC_URL: "jdbc:postgresql://postgres:5432/bitbucket"
+      JDBC_USER: "bitbucket"
+      JDBC_PASSWORD: "bitbucket"
+      # JVM heap — keep low for local dev
+      JVM_MINIMUM_MEMORY: "512m"
+      JVM_MAXIMUM_MEMORY: "1536m"
+    ports:
+      - "7990:7990"  # HTTP
+      - "7999:7999"  # SSH
+    volumes:
+      - bitbucket_data:/var/atlassian/application-data/bitbucket
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:7990/status | grep -q '\"state\":\"RUNNING\"' && exit 0 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 120s
+
+volumes:
+  postgres_data:
+    driver: local
+  bitbucket_data:
+    driver: local

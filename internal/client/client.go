@@ -75,11 +75,15 @@ func NewClient(config Config) (*Client, error) {
 		Timeout:   config.Timeout,
 	}
 
-	// Create generated API client configuration
+	// Create generated API client configuration.
+	// The generated client appends paths like /api/latest/projects, so the server
+	// URL must include the Bitbucket REST context root (/rest).
+	// Full request URL = BaseURL + "/rest" + "/api/latest/projects"
+	//                  = http://host:7990/rest/api/latest/projects  ✓
 	apiConfig := bitbucket.NewConfiguration()
 	apiConfig.Servers = bitbucket.ServerConfigurations{
 		{
-			URL: config.BaseURL,
+			URL: config.BaseURL + "/rest",
 		},
 	}
 	apiConfig.HTTPClient = httpClient

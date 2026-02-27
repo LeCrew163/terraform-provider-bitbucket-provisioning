@@ -1,0 +1,14 @@
+# Copy to terraform.tfvars for local testing:
+#   cp terraform.tfvars.example terraform.tfvars
+#
+# Alternatively, set environment variables (no .tfvars file needed):
+#   export BITBUCKET_BASE_URL=http://localhost:7990
+#   export BITBUCKET_USERNAME=admin
+#   export BITBUCKET_PASSWORD=admin
+
+bitbucket_url      = "http://localhost:7990"
+bitbucket_username = "admin"
+bitbucket_password = "admin"
+
+# Uncomment if using a self-signed TLS certificate:
+# insecure_skip_verify = true

@@ -1,22 +1,68 @@
 default: build
 
+# ── Build info ───────────────────────────────────────────────────────────────
+BINARY       := terraform-provider-bitbucket-dc
+PROVIDER_NS  := colab.internal.sldo.cloud/alpina/bitbucket-dc
+VERSION      := 0.1.0
+
+OS   := $(shell go env GOOS)
+ARCH := $(shell go env GOARCH)
+PLUGIN_DIR := $(HOME)/.terraform.d/plugins/$(PROVIDER_NS)/$(VERSION)/$(OS)_$(ARCH)
+
+# ── Core ─────────────────────────────────────────────────────────────────────
 .PHONY: build
 build:
-	go build -o terraform-provider-bitbucket-dc
+	go build -o $(BINARY)
 
 .PHONY: install
 install: build
-	mkdir -p ~/.terraform.d/plugins/colab.internal.sldo.cloud/alpina/bitbucket-dc/0.1.0/darwin_arm64
-	mv terraform-provider-bitbucket-dc ~/.terraform.d/plugins/colab.internal.sldo.cloud/alpina/bitbucket-dc/0.1.0/darwin_arm64/
+	mkdir -p $(PLUGIN_DIR)
+	cp $(BINARY) $(PLUGIN_DIR)/
 
+.PHONY: clean
+clean:
+	rm -f $(BINARY)
+	rm -rf dist/
+
+# ── Tests ────────────────────────────────────────────────────────────────────
 .PHONY: test
 test:
 	go test -v -cover ./...
 
+# Run acceptance tests against a live Bitbucket instance.
+# Required environment variables:
+#   BITBUCKET_BASE_URL   e.g. http://localhost:7990
+#   BITBUCKET_USERNAME + BITBUCKET_PASSWORD  (or BITBUCKET_TOKEN)
+# Note: if both BITBUCKET_TOKEN and username/password env vars are set, unset
+#       BITBUCKET_TOKEN first to avoid the "Multiple Authentication Methods" error.
 .PHONY: testacc
 testacc:
 	TF_ACC=1 go test -v -cover ./... -timeout 120m
 
+# End-to-end test: start Docker Compose, build+install provider, run Terraform.
+# Copy .env.local.example to .env.local and fill in BITBUCKET_LICENSE first.
+.PHONY: test-local
+test-local:
+	bash scripts/test-local.sh
+
+# ── Docker ───────────────────────────────────────────────────────────────────
+.PHONY: docker-up
+docker-up:
+	docker compose --env-file .env.local up -d
+
+.PHONY: docker-down
+docker-down:
+	docker compose down
+
+.PHONY: docker-clean
+docker-clean:
+	docker compose down -v
+
+.PHONY: docker-logs
+docker-logs:
+	docker compose logs -f bitbucket
+
+# ── Code quality ─────────────────────────────────────────────────────────────
 .PHONY: fmt
 fmt:
 	go fmt ./...
@@ -29,6 +75,7 @@ vet:
 lint:
 	golangci-lint run
 
+# ── Code generation ──────────────────────────────────────────────────────────
 .PHONY: generate
 generate:
 	go generate ./...
@@ -49,11 +96,7 @@ generate-client:
 docs:
 	tfplugindocs generate --provider-name bitbucket-dc
 
-.PHONY: clean
-clean:
-	rm -f terraform-provider-bitbucket-dc
-	rm -rf dist/
-
+# ── Module management ────────────────────────────────────────────────────────
 .PHONY: tidy
 tidy:
 	go mod tidy
@@ -66,20 +109,40 @@ vendor:
 release-test:
 	goreleaser release --snapshot --clean
 
+# ── Help ─────────────────────────────────────────────────────────────────────
 .PHONY: help
 help:
-	@echo "Available targets:"
-	@echo "  build        - Build the provider binary"
-	@echo "  install      - Install provider locally for testing"
-	@echo "  test         - Run unit tests"
-	@echo "  testacc      - Run acceptance tests"
-	@echo "  fmt          - Format Go code"
-	@echo "  vet          - Run go vet"
-	@echo "  lint         - Run golangci-lint"
-	@echo "  generate     - Run go generate"
-	@echo "  generate-client - Generate API client from OpenAPI spec"
-	@echo "  docs         - Generate documentation"
-	@echo "  clean        - Clean build artifacts"
-	@echo "  tidy         - Tidy Go modules"
-	@echo "  vendor       - Vendor dependencies"
-	@echo "  release-test - Test release process locally"
+	@echo ""
+	@echo "Usage: make <target>"
+	@echo ""
+	@echo "Core:"
+	@echo "  build            Build the provider binary ($(BINARY))"
+	@echo "  install          Build and install to $(PLUGIN_DIR)"
+	@echo "  clean            Remove build artifacts"
+	@echo ""
+	@echo "Tests:"
+	@echo "  test             Run unit tests"
+	@echo "  testacc          Run acceptance tests (needs BITBUCKET_BASE_URL + credentials)"
+	@echo "  test-local       Full end-to-end test via Docker Compose"
+	@echo ""
+	@echo "Docker:"
+	@echo "  docker-up        Start Bitbucket + PostgreSQL (requires .env.local)"
+	@echo "  docker-down      Stop containers (keep volumes)"
+	@echo "  docker-clean     Stop containers and delete volumes"
+	@echo "  docker-logs      Tail Bitbucket container logs"
+	@echo ""
+	@echo "Code quality:"
+	@echo "  fmt              Format Go code"
+	@echo "  vet              Run go vet"
+	@echo "  lint             Run golangci-lint"
+	@echo ""
+	@echo "Generation:"
+	@echo "  generate         Run go generate"
+	@echo "  generate-client  Regenerate API client from OpenAPI spec"
+	@echo "  docs             Generate provider documentation"
+	@echo ""
+	@echo "Module:"
+	@echo "  tidy             Tidy go.mod / go.sum"
+	@echo "  vendor           Vendor dependencies"
+	@echo "  release-test     Test goreleaser release build"
+	@echo ""
