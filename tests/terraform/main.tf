@@ -106,6 +106,26 @@ resource "bitbucketdc_repository_access_key" "frontend_deploy" {
   permission      = "REPO_READ"
 }
 
+# ── Data sources ──────────────────────────────────────────────────────────
+data "bitbucketdc_project" "test_private" {
+  key        = bitbucketdc_project.test_private.key
+  depends_on = [bitbucketdc_project.test_private]
+}
+
+data "bitbucketdc_repository" "api" {
+  project_key = bitbucketdc_project.test_private.key
+  slug        = bitbucketdc_repository.api.slug
+  depends_on  = [bitbucketdc_repository.api]
+}
+
+data "bitbucketdc_user" "admin" {
+  slug = "admin"
+}
+
+data "bitbucketdc_group" "stash_users" {
+  name = "stash-users"
+}
+
 # ── Outputs ────────────────────────────────────────────────────────────────
 output "private_project_id" {
   description = "Numeric ID of the private test project"
@@ -150,4 +170,24 @@ output "ci_pipeline_key_id" {
 output "ci_pipeline_key_fingerprint" {
   description = "Fingerprint of the CI Pipeline project access key"
   value       = bitbucketdc_project_access_key.ci_pipeline.fingerprint
+}
+
+output "ds_project_name" {
+  description = "Project name read back via data source"
+  value       = data.bitbucketdc_project.test_private.name
+}
+
+output "ds_repo_state" {
+  description = "Repository state read back via data source"
+  value       = data.bitbucketdc_repository.api.state
+}
+
+output "ds_admin_display_name" {
+  description = "Display name of the admin user"
+  value       = data.bitbucketdc_user.admin.display_name
+}
+
+output "ds_group_name" {
+  description = "Group name read back via data source"
+  value       = data.bitbucketdc_group.stash_users.name
 }

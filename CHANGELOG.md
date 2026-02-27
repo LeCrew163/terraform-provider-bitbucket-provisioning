@@ -9,6 +9,33 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-02-27
+
+### Added
+
+#### `bitbucketdc_project` data source
+- Reads an existing Bitbucket DC project by key
+- Attributes: `key` (required), `id` (computed, equals key), `name`, `description`, `public`
+- Returns a clear error when the project key is not found
+
+#### `bitbucketdc_repository` data source
+- Reads an existing Bitbucket DC repository by project key and slug
+- Attributes: `project_key`, `slug` (both required), `id` (`{project_key}/{slug}`), `name`, `description`, `public`, `forkable`, `default_branch`, `clone_url_http`, `clone_url_ssh`, `state`
+- Reuses the same clone URL extraction helper as the resource
+
+#### `bitbucketdc_user` data source
+- Reads an existing Bitbucket DC user by slug (username)
+- Attributes: `slug` (required), `id` (computed, equals slug), `name`, `display_name`, `email_address`, `active`
+- Returns a clear 404 error when the slug is not found
+
+#### `bitbucketdc_group` data source
+- Reads an existing Bitbucket DC group by exact name
+- Attributes: `name` (required), `id` (computed, equals name)
+- Uses the `GetGroups` list-with-filter endpoint and performs an exact-match check (Bitbucket DC has no get-by-name API)
+- Returns a clear error when no exact match is found
+
+---
+
 ## [0.3.0] — 2026-02-27
 
 ### Added

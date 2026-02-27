@@ -243,7 +243,10 @@ func (p *bitbucketdcProvider) Configure(ctx context.Context, req provider.Config
 // DataSources defines the data sources implemented in the provider.
 func (p *bitbucketdcProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		// Data sources will be added here
+		NewProjectDataSource,
+		NewRepositoryDataSource,
+		NewUserDataSource,
+		NewGroupDataSource,
 	}
 }
 
