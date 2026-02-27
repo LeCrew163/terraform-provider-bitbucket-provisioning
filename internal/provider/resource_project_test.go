@@ -2,11 +2,8 @@ package provider_test
 
 import (
 	"fmt"
-	"net/http"
-	"os"
 	"regexp"
 	"testing"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
@@ -230,7 +227,7 @@ func TestAccProjectResource_invalidKeyPlan(t *testing.T) {
 // testAccCheckProjectDestroyed verifies that all projects managed by the test
 // no longer exist in Bitbucket after the test resources have been destroyed.
 func testAccCheckProjectDestroyed(s *terraform.State) error {
-	httpClient := &http.Client{Timeout: 10 * time.Second}
+	httpClient := newTestHTTPClient()
 
 	for name, rs := range s.RootModule().Resources {
 		if rs.Type != "bitbucketdc_project" {
@@ -238,23 +235,15 @@ func testAccCheckProjectDestroyed(s *terraform.State) error {
 		}
 
 		key := rs.Primary.Attributes["key"]
-		baseURL := os.Getenv("BITBUCKET_BASE_URL")
+		url := fmt.Sprintf("%s/rest/api/latest/projects/%s", testBitbucketBaseURL(), key)
 
-		url := fmt.Sprintf("%s/rest/api/latest/projects/%s", baseURL, key)
-		req, err := http.NewRequest(http.MethodGet, url, nil)
-		if err != nil {
-			return fmt.Errorf("error building request for %s: %w", name, err)
-		}
-
-		addBasicAuth(req)
-
-		resp, err := httpClient.Do(req)
+		resp, err := httpClient.Do(newTestRequest("GET", url))
 		if err != nil {
 			return fmt.Errorf("error checking project %s (%s): %w", key, name, err)
 		}
 		resp.Body.Close()
 
-		if resp.StatusCode != http.StatusNotFound {
+		if resp.StatusCode != 404 {
 			return fmt.Errorf("project %s (%s) still exists (HTTP %d)", key, name, resp.StatusCode)
 		}
 	}
@@ -263,49 +252,23 @@ func testAccCheckProjectDestroyed(s *terraform.State) error {
 }
 
 // testAccDeleteProjectOutOfBand returns a TestCheckFunc that deletes the project
-// with the given key directly via the Bitbucket REST API, simulating an out-of-band
-// deletion that Terraform is unaware of.
+// directly via the Bitbucket REST API, simulating an out-of-band deletion.
 func testAccDeleteProjectOutOfBand(key string) resource.TestCheckFunc {
 	return func(_ *terraform.State) error {
-		httpClient := &http.Client{Timeout: 10 * time.Second}
-		baseURL := os.Getenv("BITBUCKET_BASE_URL")
+		url := fmt.Sprintf("%s/rest/api/latest/projects/%s", testBitbucketBaseURL(), key)
 
-		url := fmt.Sprintf("%s/rest/api/latest/projects/%s", baseURL, key)
-		req, err := http.NewRequest(http.MethodDelete, url, nil)
-		if err != nil {
-			return fmt.Errorf("error building delete request for project %s: %w", key, err)
-		}
-
-		addBasicAuth(req)
-
-		resp, err := httpClient.Do(req)
+		resp, err := newTestHTTPClient().Do(newTestRequest("DELETE", url))
 		if err != nil {
 			return fmt.Errorf("error deleting project %s out-of-band: %w", key, err)
 		}
 		resp.Body.Close()
 
-		// 204 No Content = deleted; 404 Not Found = already gone — both are fine.
-		if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusNotFound {
-			return fmt.Errorf("unexpected status code %d when deleting project %s out-of-band", resp.StatusCode, key)
+		if resp.StatusCode != 204 && resp.StatusCode != 404 {
+			return fmt.Errorf("unexpected status %d when deleting project %s out-of-band", resp.StatusCode, key)
 		}
 
 		return nil
 	}
-}
-
-// addBasicAuth sets the Authorization header on r using the credentials from
-// environment variables (BITBUCKET_TOKEN takes precedence over username/password).
-func addBasicAuth(r *http.Request) {
-	if token := os.Getenv("BITBUCKET_TOKEN"); token != "" {
-		// Bitbucket DC: personal access tokens are sent as the username
-		// with an empty password.
-		r.SetBasicAuth(token, "")
-		return
-	}
-	r.SetBasicAuth(
-		os.Getenv("BITBUCKET_USERNAME"),
-		os.Getenv("BITBUCKET_PASSWORD"),
-	)
 }
 
 // ── Config helpers ───────────────────────────────────────────────────────────

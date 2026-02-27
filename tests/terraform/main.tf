@@ -27,14 +27,55 @@ resource "bitbucketdc_project" "test_private" {
 # ── Test: create a public project ──────────────────────────────────────────
 resource "bitbucketdc_project" "test_public" {
   key    = "TFLPUB"
-  name   = "Terraform Local Test (Public)"
+  name   = "Terraform Local Test Public"
   public = true
 }
 
 # ── Test: project with no optional fields ──────────────────────────────────
 resource "bitbucketdc_project" "test_minimal" {
   key  = "TFLMIN"
-  name = "Terraform Local Test (Minimal)"
+  name = "Terraform Local Test Minimal"
+}
+
+# ── Test: repository within the private project ────────────────────────────
+resource "bitbucketdc_repository" "api" {
+  project_key = bitbucketdc_project.test_private.key
+  name        = "API Service"
+  description = "Main API service repository"
+  forkable    = true
+  public      = false
+}
+
+resource "bitbucketdc_repository" "frontend" {
+  project_key = bitbucketdc_project.test_private.key
+  name        = "Frontend App"
+}
+
+# ── Test: project-level permissions ───────────────────────────────────────
+resource "bitbucketdc_project_permissions" "test_private" {
+  project_key = bitbucketdc_project.test_private.key
+
+  user {
+    name       = "admin"
+    permission = "PROJECT_ADMIN"
+  }
+}
+
+# ── Test: branch restrictions on the private project ──────────────────────
+resource "bitbucketdc_branch_permissions" "test_private" {
+  project_key = bitbucketdc_project.test_private.key
+
+  restriction {
+    type         = "no-deletes"
+    matcher_type = "BRANCH"
+    matcher_id   = "main"
+  }
+
+  restriction {
+    type         = "fast-forward-only"
+    matcher_type = "PATTERN"
+    matcher_id   = "release/*"
+  }
 }
 
 # ── Outputs ────────────────────────────────────────────────────────────────
@@ -56,4 +97,19 @@ output "public_project_id" {
 output "minimal_project_id" {
   description = "Numeric ID of the minimal test project"
   value       = bitbucketdc_project.test_minimal.id
+}
+
+output "api_repo_slug" {
+  description = "Slug of the API service repository (derived from name by Bitbucket)"
+  value       = bitbucketdc_repository.api.slug
+}
+
+output "api_repo_clone_http" {
+  description = "HTTP clone URL for the API service repository"
+  value       = bitbucketdc_repository.api.clone_url_http
+}
+
+output "frontend_repo_slug" {
+  description = "Slug of the frontend repository"
+  value       = bitbucketdc_repository.frontend.slug
 }
