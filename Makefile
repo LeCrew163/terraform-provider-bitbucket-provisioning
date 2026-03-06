@@ -3,7 +3,7 @@ default: build
 # ── Build info ───────────────────────────────────────────────────────────────
 BINARY       := terraform-provider-bitbucket-provisioning
 PROVIDER_NS  := registry.terraform.io/LeCrew163/bitbucket-provisioning
-VERSION      := 0.10.0
+VERSION      := 0.10.4
 
 OS   := $(shell go env GOOS)
 ARCH := $(shell go env GOARCH)
