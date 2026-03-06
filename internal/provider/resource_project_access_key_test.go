@@ -12,9 +12,6 @@ import (
 // It is NOT a real key used for any environment.
 const testSSHPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHj27twPopsFRMno1cyptyxbcKG3zSlFq7oCWPzWzlyP test-acceptance-key-1"
 
-// testSSHPublicKey2 is a second distinct throwaway test key for update/replace scenarios.
-const testSSHPublicKey2 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOg1UJ5c9DFlej9e6jLiv3X8YL4e0eCH75dwG+VrtP8q test-acceptance-key-2"
-
 // TestAccProjectAccessKeyResource_basic tests the full lifecycle:
 // create with label → import → update permission → update key (replace) → destroy.
 func TestAccProjectAccessKeyResource_basic(t *testing.T) {
