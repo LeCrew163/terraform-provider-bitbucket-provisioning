@@ -9,8 +9,6 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [0.10.5] — 2026-03-06
-
 ### Added
 
 - Provider credential security tests: unit tests verify that `token` and `password` are marked `Sensitive: true` in the provider schema (so values are redacted in plan/apply output), and an acceptance test verifies that credential values never appear as attributes in Terraform resource state.
