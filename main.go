@@ -12,7 +12,9 @@ import (
 var version string = "dev"
 
 func main() {
-	err := providerserver.Serve(context.Background(), provider.New(version), providerserver.ServeOpts{})
+	err := providerserver.Serve(context.Background(), provider.New(version), providerserver.ServeOpts{
+		Address: "registry.terraform.io/LeCrew163/bitbucket-provisioning",
+	})
 	if err != nil {
 		log.Fatal(err.Error())
 	}
