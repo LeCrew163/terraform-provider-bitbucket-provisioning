@@ -24,6 +24,8 @@ func TestIsValidProjectKey(t *testing.T) {
 		{"PROJ123", true},                    // letters + digits
 		{"A1", true},                         // letter + digit
 		{"A_1_2_3", true},                    // multiple underscores
+		{"ABC-DEF", true},                    // hyphen is valid
+		{"A-B-C", true},                      // multiple hyphens
 		{"Z", false},                         // only 1 char (too short)
 		{"A" + strings.Repeat("B", 127), true}, // exactly 128 chars (max)
 
@@ -44,7 +46,6 @@ func TestIsValidProjectKey(t *testing.T) {
 		{"1ABC", false}, // starts with digit
 
 		// ── Invalid: illegal characters ───────────────────────────────────────
-		{"ABC-DEF", false},  // hyphen
 		{"ABC DEF", false},  // space
 		{"ABC.DEF", false},  // dot
 		{"ABC/DEF", false},  // slash
@@ -74,7 +75,7 @@ func boolStr(b bool) string {
 func TestProjectKeyValidator_Description(t *testing.T) {
 	v := &projectKeyValidator{}
 	ctx := context.Background()
-	want := "Project key must be uppercase alphanumeric with underscores, 2-128 characters"
+	want := "Project key must be uppercase alphanumeric with underscores or hyphens, 2-128 characters"
 
 	if got := v.Description(ctx); got != want {
 		t.Errorf("Description() = %q, want %q", got, want)
@@ -107,7 +108,7 @@ func TestProjectKeyValidator_ValidateString_InvalidKeys(t *testing.T) {
 	ctx := context.Background()
 	v := &projectKeyValidator{}
 
-	invalidKeys := []string{"a", "A", "_ABC", "1ABC", "abc", "AB-CD", "AB CD"}
+	invalidKeys := []string{"a", "A", "_ABC", "1ABC", "abc", "AB CD"}
 
 	for _, key := range invalidKeys {
 		t.Run(key, func(t *testing.T) {
