@@ -1,4 +1,6 @@
 # Terraform Provider for Bitbucket Data Center
+[![CI](https://github.com/LeCrew163/bitbucket-provisioning/actions/workflows/ci.yml/badge.svg)](https://github.com/LeCrew163/bitbucket-provisioning/actions/workflows/ci.yml)
+[![Release](https://github.com/LeCrew163/bitbucket-provisioning/actions/workflows/release.yml/badge.svg)](https://github.com/LeCrew163/bitbucket-provisioning/actions/workflows/release.yml)
 
 A Terraform provider for managing Bitbucket Data Center resources.
 
