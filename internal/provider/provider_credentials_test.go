@@ -16,32 +16,20 @@ import (
 // ── Schema sensitivity unit tests ─────────────────────────────────────────────
 // These tests do NOT require a running Bitbucket instance.
 
-// TestProviderSchema_tokenSensitive verifies that the 'token' provider attribute
-// is marked Sensitive so Terraform redacts its value in plan/apply output.
-func TestProviderSchema_tokenSensitive(t *testing.T) {
-	checkProviderAttrSensitive(t, "token", true)
-}
-
-// TestProviderSchema_passwordSensitive verifies that the 'password' provider
-// attribute is marked Sensitive.
-func TestProviderSchema_passwordSensitive(t *testing.T) {
-	checkProviderAttrSensitive(t, "password", true)
-}
-
-// TestProviderSchema_usernameNotSensitive verifies that 'username' is
-// intentionally NOT marked Sensitive — it is a public login identifier,
-// not a secret value.
-func TestProviderSchema_usernameNotSensitive(t *testing.T) {
-	checkProviderAttrSensitive(t, "username", false)
-}
-
-// checkProviderAttrSensitive instantiates the provider, calls Schema(), and
-// asserts that the named attribute has the expected Sensitive value.
-func checkProviderAttrSensitive(t *testing.T, attrName string, wantSensitive bool) {
-	t.Helper()
+// TestProviderSchema_credentialSensitivity verifies that secret credential
+// attributes are marked Sensitive (so Terraform redacts them in plan/apply
+// output) and that the non-secret username is intentionally not sensitive.
+func TestProviderSchema_credentialSensitivity(t *testing.T) {
+	tests := []struct {
+		attr          string
+		wantSensitive bool
+	}{
+		{"token", true},
+		{"password", true},
+		{"username", false}, // public login identifier, not a secret
+	}
 
 	p := bitbucketProvider.New("test")()
-
 	var req fwprovider.SchemaRequest
 	resp := &fwprovider.SchemaResponse{}
 	p.Schema(context.Background(), req, resp)
@@ -49,18 +37,20 @@ func checkProviderAttrSensitive(t *testing.T, attrName string, wantSensitive boo
 		t.Fatalf("Schema() returned diagnostics errors: %s", resp.Diagnostics)
 	}
 
-	attr, ok := resp.Schema.Attributes[attrName]
-	if !ok {
-		t.Fatalf("provider schema does not define attribute %q", attrName)
-	}
-
-	sa, ok := attr.(fwschema.StringAttribute)
-	if !ok {
-		t.Fatalf("attribute %q is not a StringAttribute (got %T)", attrName, attr)
-	}
-
-	if sa.Sensitive != wantSensitive {
-		t.Errorf("attribute %q: Sensitive = %v, want %v", attrName, sa.Sensitive, wantSensitive)
+	for _, tc := range tests {
+		t.Run(tc.attr, func(t *testing.T) {
+			attr, ok := resp.Schema.Attributes[tc.attr]
+			if !ok {
+				t.Fatalf("provider schema does not define attribute %q", tc.attr)
+			}
+			sa, ok := attr.(fwschema.StringAttribute)
+			if !ok {
+				t.Fatalf("attribute %q is not a StringAttribute (got %T)", tc.attr, attr)
+			}
+			if sa.Sensitive != tc.wantSensitive {
+				t.Errorf("Sensitive = %v, want %v", sa.Sensitive, tc.wantSensitive)
+			}
+		})
 	}
 }
 
@@ -87,15 +77,13 @@ func TestAccProvider_credentialsNotInResourceState(t *testing.T) {
 // resource attribute value in the state equals one of the credential env vars.
 func testAccCheckNoCredentialInState() resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		creds := map[string]string{}
-		if v := os.Getenv("BITBUCKET_TOKEN"); v != "" {
-			creds["BITBUCKET_TOKEN"] = v
-		}
-		if v := os.Getenv("BITBUCKET_USERNAME"); v != "" {
-			creds["BITBUCKET_USERNAME"] = v
-		}
-		if v := os.Getenv("BITBUCKET_PASSWORD"); v != "" {
-			creds["BITBUCKET_PASSWORD"] = v
+		creds := []struct {
+			envName string
+			value   string
+		}{
+			{"BITBUCKET_TOKEN", os.Getenv("BITBUCKET_TOKEN")},
+			{"BITBUCKET_USERNAME", os.Getenv("BITBUCKET_USERNAME")},
+			{"BITBUCKET_PASSWORD", os.Getenv("BITBUCKET_PASSWORD")},
 		}
 
 		for resourceName, ms := range s.RootModule().Resources {
@@ -103,11 +91,11 @@ func testAccCheckNoCredentialInState() resource.TestCheckFunc {
 				continue
 			}
 			for attrKey, attrVal := range ms.Primary.Attributes {
-				for envName, secret := range creds {
-					if attrVal == secret {
+				for _, cred := range creds {
+					if cred.value != "" && attrVal == cred.value {
 						return fmt.Errorf(
 							"resource %q attribute %q contains the value of %s — credentials must not be stored in resource state",
-							resourceName, attrKey, envName,
+							resourceName, attrKey, cred.envName,
 						)
 					}
 				}
