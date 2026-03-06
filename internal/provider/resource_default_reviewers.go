@@ -503,9 +503,9 @@ func (r *defaultReviewersResource) resolveUsers(
 ) ([]bitbucket.RestApplicationUser, error) {
 	users := make([]bitbucket.RestApplicationUser, 0, len(slugs))
 	for _, slug := range slugs {
-		user, _, err := r.client.GetAPIClient().SystemMaintenanceAPI.GetUser(authCtx, slug).Execute()
+		user, httpResp, err := r.client.GetAPIClient().SystemMaintenanceAPI.GetUser(authCtx, slug).Execute()
 		if err != nil {
-			return nil, fmt.Errorf("failed to resolve user %q: %w", slug, err)
+			return nil, fmt.Errorf("failed to resolve user %q: %w", slug, client.ParseErrorResponse(httpResp))
 		}
 		users = append(users, *user)
 	}

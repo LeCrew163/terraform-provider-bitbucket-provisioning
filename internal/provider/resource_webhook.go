@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -64,6 +65,9 @@ func (r *webhookResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 			"webhook_id": schema.Int64Attribute{
 				Description: "The numeric webhook ID assigned by Bitbucket.",
 				Computed:    true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
+				},
 			},
 			"project_key": schema.StringAttribute{
 				Description: "The project key.",
@@ -314,6 +318,13 @@ func (r *webhookResource) ImportState(ctx context.Context, req resource.ImportSt
 	webhook, httpResp, apiErr := r.getWebhook(authCtx, projectKey, repoSlug, webhookIDStr)
 	if apiErr != nil {
 		resp.Diagnostics.Append(client.HandleError("Failed to Import Webhook", client.ParseErrorResponse(httpResp))...)
+		return
+	}
+	if webhook == nil {
+		resp.Diagnostics.AddError(
+			"Webhook Not Found",
+			fmt.Sprintf("No webhook with id %d found.", webhookID),
+		)
 		return
 	}
 
