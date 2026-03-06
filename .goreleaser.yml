@@ -54,7 +54,7 @@ signs:
 release:
   github:
     owner: LeCrew163
-    name: bitbucket-provisioning
+    name: terraform-provider-bitbucket-provisioning
 
 changelog:
   use: git
