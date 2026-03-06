@@ -10,47 +10,58 @@ import (
 )
 
 // ── isValidProjectKey ────────────────────────────────────────────────────────
+// Rules verified against Bitbucket DC 9 (local instance):
+//   - Must start with a letter (a-z or A-Z)
+//   - Remaining chars: letters, digits, underscores, hyphens
+//   - Length: 1-128 characters
 
 func TestIsValidProjectKey(t *testing.T) {
 	tests := []struct {
 		key   string
 		valid bool
 	}{
-		// ── Valid keys ────────────────────────────────────────────────────────
-		{"AB", true},                         // minimum length (2)
-		{"ABC", true},                        // simple letters
-		{"MYPROJECT", true},                  // common pattern
-		{"MY_PROJECT", true},                 // with underscore
-		{"PROJ123", true},                    // letters + digits
-		{"A1", true},                         // letter + digit
-		{"A_1_2_3", true},                    // multiple underscores
-		{"ABC-DEF", true},                    // hyphen is valid
-		{"A-B-C", true},                      // multiple hyphens
-		{"Z", false},                         // only 1 char (too short)
-		{"A" + strings.Repeat("B", 127), true}, // exactly 128 chars (max)
+		// ── Valid: minimum length ─────────────────────────────────────────────
+		{"A", true},   // single uppercase letter
+		{"a", true},   // single lowercase letter
+		{"AB", true},  // two letters
 
-		// ── Invalid: too short ────────────────────────────────────────────────
-		{"", false},  // empty
-		{"A", false}, // single char
+		// ── Valid: case insensitive ───────────────────────────────────────────
+		{"ABC", true},       // all uppercase
+		{"abc", true},       // all lowercase
+		{"Abc", true},       // mixed case
+		{"aBC", true},       // starts lowercase
 
-		// ── Invalid: too long ─────────────────────────────────────────────────
-		{"A" + strings.Repeat("B", 128), false}, // 129 chars (over max)
+		// ── Valid: common patterns ────────────────────────────────────────────
+		{"MYPROJECT", true},  // all caps
+		{"myproject", true},  // all lowercase
+		{"MY_PROJECT", true}, // with underscore
+		{"PROJ123", true},    // letters + digits
+		{"A1", true},         // letter + digit
+		{"A_1_2_3", true},    // multiple underscores
+		{"ABC-DEF", true},    // hyphen
+		{"A-B-C", true},      // multiple hyphens
+		{"Proj-123", true},   // mixed case with hyphen
 
-		// ── Invalid: wrong case ───────────────────────────────────────────────
-		{"abc", false},   // all lowercase
-		{"Abc", false},   // mixed case
-		{"aBC", false},   // starts lowercase
+		// ── Valid: max length (128 chars) ─────────────────────────────────────
+		{"A" + strings.Repeat("B", 127), true}, // exactly 128 chars
+
+		// ── Invalid: empty ────────────────────────────────────────────────────
+		{"", false},
+
+		// ── Invalid: too long (>128 chars) ────────────────────────────────────
+		{"A" + strings.Repeat("B", 128), false}, // 129 chars
 
 		// ── Invalid: illegal first character ──────────────────────────────────
 		{"_ABC", false}, // starts with underscore
 		{"1ABC", false}, // starts with digit
+		{"-ABC", false}, // starts with hyphen
 
 		// ── Invalid: illegal characters ───────────────────────────────────────
-		{"ABC DEF", false},  // space
-		{"ABC.DEF", false},  // dot
-		{"ABC/DEF", false},  // slash
-		{"ABC@DEF", false},  // at sign
-		{"ABC!DEF", false},  // exclamation mark
+		{"ABC DEF", false}, // space
+		{"ABC.DEF", false}, // dot
+		{"ABC/DEF", false}, // slash
+		{"ABC@DEF", false}, // at sign
+		{"ABC!DEF", false}, // exclamation mark
 	}
 
 	for _, tc := range tests {
@@ -75,7 +86,7 @@ func boolStr(b bool) string {
 func TestProjectKeyValidator_Description(t *testing.T) {
 	v := &projectKeyValidator{}
 	ctx := context.Background()
-	want := "Project key must be uppercase alphanumeric with underscores or hyphens, 2-128 characters"
+	want := "Project key must start with a letter and contain only letters, digits, underscores, or hyphens (1-128 characters)"
 
 	if got := v.Description(ctx); got != want {
 		t.Errorf("Description() = %q, want %q", got, want)
@@ -90,7 +101,7 @@ func TestProjectKeyValidator_ValidateString_ValidKeys(t *testing.T) {
 	ctx := context.Background()
 	v := &projectKeyValidator{}
 
-	validKeys := []string{"AB", "MYPROJECT", "MY_PROJECT", "PROJ123", "A1"}
+	validKeys := []string{"A", "AB", "abc", "MYPROJECT", "MY_PROJECT", "PROJ123", "A1", "ABC-DEF", "Proj-123"}
 
 	for _, key := range validKeys {
 		t.Run(key, func(t *testing.T) {
@@ -108,10 +119,10 @@ func TestProjectKeyValidator_ValidateString_InvalidKeys(t *testing.T) {
 	ctx := context.Background()
 	v := &projectKeyValidator{}
 
-	invalidKeys := []string{"a", "A", "_ABC", "1ABC", "abc", "AB CD"}
+	invalidKeys := []string{"", "_ABC", "-ABC", "1ABC", "AB CD", "AB.CD"}
 
 	for _, key := range invalidKeys {
-		t.Run(key, func(t *testing.T) {
+		t.Run(key+"_invalid", func(t *testing.T) {
 			req := validator.StringRequest{ConfigValue: types.StringValue(key)}
 			resp := &validator.StringResponse{}
 			v.ValidateString(ctx, req, resp)

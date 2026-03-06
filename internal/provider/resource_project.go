@@ -402,11 +402,11 @@ func (r *projectResource) ImportState(ctx context.Context, req resource.ImportSt
 type projectKeyValidator struct{}
 
 func (v *projectKeyValidator) Description(ctx context.Context) string {
-	return "Project key must be uppercase alphanumeric with underscores or hyphens, 2-128 characters"
+	return "Project key must start with a letter and contain only letters, digits, underscores, or hyphens (1-128 characters)"
 }
 
 func (v *projectKeyValidator) MarkdownDescription(ctx context.Context) string {
-	return "Project key must be uppercase alphanumeric with underscores or hyphens, 2-128 characters"
+	return "Project key must start with a letter and contain only letters, digits, underscores, or hyphens (1-128 characters)"
 }
 
 func (v *projectKeyValidator) ValidateString(ctx context.Context, req validator.StringRequest, resp *validator.StringResponse) {
@@ -420,18 +420,16 @@ func (v *projectKeyValidator) ValidateString(ctx context.Context, req validator.
 		resp.Diagnostics.AddAttributeError(
 			req.Path,
 			"Invalid Project Key",
-			fmt.Sprintf("Project key '%s' is invalid. Must be uppercase alphanumeric with underscores or hyphens, 2-128 characters. "+
-				"Example: MYPROJ, MY_PROJECT, PROJ-123", key),
+			fmt.Sprintf("Project key %q is invalid. Must start with a letter and contain only letters, digits, underscores, or hyphens (1-128 characters). "+
+				"Example: MYPROJ, my_project, Proj-123", key),
 		)
 	}
 }
 
-// isValidProjectKey checks if a project key is valid
+// isValidProjectKey checks if a project key is valid.
+// Verified against Bitbucket DC 9: starts with a letter (any case),
+// followed by letters, digits, underscores, or hyphens; max 128 characters.
 func isValidProjectKey(key string) bool {
-	// Project key must be:
-	// - 2 to 128 characters
-	// - Uppercase letters, numbers, underscores, and hyphens
-	// - Must start with an uppercase letter
-	match, _ := regexp.MatchString(`^[A-Z][A-Z0-9_-]{1,127}$`, key)
+	match, _ := regexp.MatchString(`^[A-Za-z][A-Za-z0-9_-]{0,127}$`, key)
 	return match
 }
