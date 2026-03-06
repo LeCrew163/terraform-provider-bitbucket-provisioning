@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/internal/client"
+	"github.com/LeCrew163/bitbucket-provisioning/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"

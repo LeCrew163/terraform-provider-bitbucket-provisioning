@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	bitbucket "bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/internal/client/generated"
-	"bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/internal/client"
+	bitbucket "github.com/LeCrew163/bitbucket-provisioning/internal/client/generated"
+	"github.com/LeCrew163/bitbucket-provisioning/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/resource"

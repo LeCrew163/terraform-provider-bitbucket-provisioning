@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/internal/client/generated"
+	"github.com/LeCrew163/bitbucket-provisioning/internal/client/generated"
 )
 
 // Client wraps the generated Bitbucket API client with additional functionality

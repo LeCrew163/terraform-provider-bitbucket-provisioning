@@ -15,7 +15,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Provider source address corrected to `art01.sldnet.de:8081/swisslife/bitbucket-provisioning` (was `alpina-operation`). Updated in `main.go`, `Makefile`, `.goreleaser.yml`, `jenkins/release.groovy`, and `tests/terraform/main.tf`.
+- Provider source address updated to `LeCrew163/bitbucket-provisioning` for the HashiCorp Terraform Registry.
 
 ## [0.10.0] — 2026-02-27
 
@@ -263,13 +263,13 @@ safe-delete behaviour to prevent accidental data loss.
 - End-to-end test script (`scripts/test-local.sh`) with plan/apply/drift-check/destroy cycle
 - Terraform test configuration (`tests/terraform/`) covering all four resource types
 
-[0.10.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.9.0..v0.10.0
-[0.9.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.8.0..v0.9.0
-[0.8.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.7.0..v0.8.0
-[0.7.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.6.0..v0.7.0
-[0.6.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.5.0..v0.6.0
-[0.5.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.4.0..v0.5.0
-[0.4.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.3.0..v0.4.0
-[0.3.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.2.0..v0.3.0
-[0.2.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/compare/v0.1.0..v0.2.0
-[0.1.0]: https://bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/commits/tag/v0.1.0
+[0.10.0]: https://github.com/LeCrew163/bitbucket-provisioning/compare/v0.9.0..v0.10.0
+[0.9.0]: https://github.com/LeCrew163/bitbucket-provisioning/compare/v0.8.0..v0.9.0
+[0.8.0]: https://github.com/LeCrew163/bitbucket-provisioning/compare/v0.7.0..v0.8.0
+[0.7.0]: https://github.com/LeCrew163/bitbucket-provisioning/compare/v0.6.0..v0.7.0
+[0.6.0]: https://github.com/LeCrew163/bitbucket-provisioning/compare/v0.5.0..v0.6.0
+[0.5.0]: https://github.com/LeCrew163/bitbucket-provisioning/compare/v0.4.0..v0.5.0
+[0.4.0]: https://github.com/LeCrew163/bitbucket-provisioning/compare/v0.3.0..v0.4.0
+[0.3.0]: https://github.com/LeCrew163/bitbucket-provisioning/compare/v0.2.0..v0.3.0
+[0.2.0]: https://github.com/LeCrew163/bitbucket-provisioning/compare/v0.1.0..v0.2.0
+[0.1.0]: https://github.com/LeCrew163/bitbucket-provisioning/releases/tag/v0.1.0

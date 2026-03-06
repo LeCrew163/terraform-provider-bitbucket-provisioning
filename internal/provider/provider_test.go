@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/internal/provider"
+	"github.com/LeCrew163/bitbucket-provisioning/internal/provider"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 )

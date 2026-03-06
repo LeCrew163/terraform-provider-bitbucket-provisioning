@@ -4,7 +4,7 @@ A Terraform provider for managing Bitbucket Data Center resources.
 
 ## Requirements
 
-- [Terraform](https://www.terraform.io/downloads.html) >= 1.0
+- [Terraform](https://www.terraform.io/downloads.html) >= 1.5
 - [Go](https://golang.org/doc/install) >= 1.21
 - Bitbucket Data Center >= 10.0
 
@@ -22,7 +22,7 @@ A Terraform provider for managing Bitbucket Data Center resources.
 Clone the repository and build the provider:
 
 ```bash
-git clone ssh://git@bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning.git
+git clone https://github.com/LeCrew163/bitbucket-provisioning.git
 cd bitbucket-provisioning
 make build
 ```
@@ -43,8 +43,8 @@ This will build and install the provider to your local Terraform plugins directo
 terraform {
   required_providers {
     bitbucketdc = {
-      source  = "colab.internal.sldo.cloud/alpina/bitbucket-dc"
-      version = "~> 0.1"
+      source  = "LeCrew163/bitbucket-provisioning"
+      version = "~> 0.10"
     }
   }
 }
@@ -139,5 +139,5 @@ See [LICENSE](LICENSE) for license information.
 
 ## Support
 
-- Issues: [Bitbucket Issues](https://bitbucket.colab.internal.sldo.cloud/projects/ALPINA-OPERATION/repos/bitbucket-provisioning/issues)
-- Documentation: See README.md and IMPLEMENTATION_STATUS.md in this repository
+- Issues: [GitHub Issues](https://github.com/LeCrew163/bitbucket-provisioning/issues)
+- Documentation: See [docs/](docs/) and README.md in this repository

@@ -2,26 +2,26 @@ terraform {
   required_version = "~> 1.5"
   required_providers {
     bitbucketdc = {
-      source  = "art01.sldnet.de:8081/swisslife/bitbucket-provisioning"
+      source  = "LeCrew163/bitbucket-provisioning"
       version = "= 0.10.0"
     }
   }
 }
 
 # Credentials come entirely from environment variables:
-#   BITBUCKET_BASE_URL=https://bitbucket.colab.internal.sldo.cloud
+#   BITBUCKET_BASE_URL=https://bitbucket.example.com
 #   BITBUCKET_TOKEN=<token>
 provider "bitbucketdc" {}
 
-# ── Import existing ALPINA-SANDBOX project ────────────────────────────────
+# ── Import an existing project ────────────────────────────────────────────
 import {
   to = bitbucketdc_project.sandbox
-  id = "ALPINA-SANDBOX"
+  id = "MY-PROJECT"
 }
 
 resource "bitbucketdc_project" "sandbox" {
-  key         = "ALPINA-SANDBOX"
-  name        = "alpina-sandbox"
+  key         = "MY-PROJECT"
+  name        = "my-project"
   description = "Sandbox"
 }
 

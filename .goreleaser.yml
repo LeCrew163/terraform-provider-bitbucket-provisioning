@@ -40,9 +40,10 @@ checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
   algorithm: sha256
 
-# No GitHub/GitLab release — distributed via Artifactory Terraform registry
 release:
-  disable: true
+  github:
+    owner: LeCrew163
+    name: bitbucket-provisioning
 
 changelog:
   use: git
@@ -62,12 +63,3 @@ changelog:
       order: 1
     - title: 'Others'
       order: 999
-
-# Upload zip archives + checksums to Artifactory.
-# Path mirrors the registry layout: terraform/<namespace>/<type>/<version>/
-# The manifest.json is generated and uploaded separately in the Jenkins pipeline.
-artifactories:
-  - name: internal
-    target: 'http://art01.sldnet.de:8081/artifactory/terraform/swisslife/bitbucket-provisioning/{{ .Version }}/'
-    username: '{{ .Env.ARTIFACTORY_USERNAME }}'
-    secret: '{{ .Env.ARTIFACTORY_SECRET }}'

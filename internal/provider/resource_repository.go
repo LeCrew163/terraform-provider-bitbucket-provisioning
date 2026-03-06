@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/internal/client"
-	bitbucket "bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/internal/client/generated"
+	"github.com/LeCrew163/bitbucket-provisioning/internal/client"
+	bitbucket "github.com/LeCrew163/bitbucket-provisioning/internal/client/generated"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"

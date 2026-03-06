@@ -2,7 +2,7 @@ terraform {
   required_version = "~> 1.5"
   required_providers {
     bitbucketdc = {
-      source  = "art01.sldnet.de:8081/swisslife/bitbucket-provisioning"
+      source  = "LeCrew163/bitbucket-provisioning"
       version = "~> 0.10"
     }
   }

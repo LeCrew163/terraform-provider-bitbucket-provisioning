@@ -1,4 +1,4 @@
-module bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning
+module github.com/LeCrew163/bitbucket-provisioning
 
 go 1.24.4
 

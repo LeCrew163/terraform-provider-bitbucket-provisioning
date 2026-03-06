@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"regexp"
 
-	"bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/internal/client"
-	"bitbucket.colab.internal.sldo.cloud/alpina-operation/bitbucket-provisioning/internal/client/generated"
+	"github.com/LeCrew163/bitbucket-provisioning/internal/client"
+	"github.com/LeCrew163/bitbucket-provisioning/internal/client/generated"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -421,7 +421,7 @@ func (v *projectKeyValidator) ValidateString(ctx context.Context, req validator.
 			req.Path,
 			"Invalid Project Key",
 			fmt.Sprintf("Project key '%s' is invalid. Must be uppercase alphanumeric with underscores or hyphens, 2-128 characters. "+
-				"Example: MYPROJ, MY_PROJECT, ALPINA-SANDBOX", key),
+				"Example: MYPROJ, MY_PROJECT, PROJ-123", key),
 		)
 	}
 }

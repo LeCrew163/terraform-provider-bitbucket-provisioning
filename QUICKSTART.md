@@ -14,7 +14,7 @@ make install
 ```
 
 The provider will be installed to:
-`~/.terraform.d/plugins/colab.internal.sldo.cloud/alpina/bitbucket-dc/0.1.0/darwin_arm64/`
+`~/.terraform.d/plugins/registry.terraform.io/LeCrew163/bitbucket-provisioning/0.10.0/darwin_arm64/`
 
 ## Create Your First Project
 
@@ -24,8 +24,8 @@ Create a file named `main.tf`:
 terraform {
   required_providers {
     bitbucketdc = {
-      source = "colab.internal.sldo.cloud/alpina/bitbucket-dc"
-      version = "~> 0.1"
+      source = "LeCrew163/bitbucket-provisioning"
+      version = "~> 0.10"
     }
   }
 }
@@ -130,12 +130,11 @@ Project keys must:
 ## Next Steps
 
 Once the basic setup works:
-1. Read the full documentation in `IMPLEMENTATION_STATUS.md`
-2. Explore additional features as they're implemented
-3. Contribute additional resources (Repository, Permissions, etc.)
+1. Read the full documentation in `docs/`
+2. Explore all available resources and data sources
+3. Check the [GitHub Issues](https://github.com/LeCrew163/bitbucket-provisioning/issues) for known problems
 
 ## Getting Help
 
-- Check `IMPLEMENTATION_STATUS.md` for detailed implementation info
 - Review `README.md` for comprehensive documentation
-- Check the issues in the repository for known problems
+- Check [GitHub Issues](https://github.com/LeCrew163/bitbucket-provisioning/issues) for known problems
