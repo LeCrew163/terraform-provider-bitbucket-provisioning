@@ -81,13 +81,15 @@ func TestAccRepositoryHookResource_jenkinsWebhook(t *testing.T) {
 func testAccRepositoryHookConfig(hookKey string, enabled bool, settingsJSON string) string {
 	return fmt.Sprintf(`
 resource "bitbucketdc_project" "test" {
-  key  = "HOOKTEST"
-  name = "Hook Test Project"
+  key             = "HOOKTEST"
+  name            = "Hook Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_repository" "test" {
-  project_key = bitbucketdc_project.test.key
-  name        = "Hook Test Repo"
+  project_key     = bitbucketdc_project.test.key
+  name            = "Hook Test Repo"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_repository_hook" "test" {

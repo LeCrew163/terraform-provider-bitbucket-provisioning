@@ -117,8 +117,9 @@ func testAccBranchPermissionsOneRuleConfig(projectKey string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Branch Permissions Test Project"
+  key             = %q
+  name            = "Branch Permissions Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_branch_permissions" "test" {
@@ -138,8 +139,9 @@ func testAccBranchPermissionsTwoRulesConfig(projectKey string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Branch Permissions Test Project"
+  key             = %q
+  name            = "Branch Permissions Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_branch_permissions" "test" {
@@ -165,8 +167,9 @@ func testAccBranchPermissionsSecondRuleConfig(projectKey string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Branch Permissions Test Project"
+  key             = %q
+  name            = "Branch Permissions Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_branch_permissions" "test" {
@@ -186,8 +189,9 @@ func testAccBranchPermissionsEmptyConfig(projectKey string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Branch Permissions Test Project"
+  key             = %q
+  name            = "Branch Permissions Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_branch_permissions" "test" {
@@ -201,8 +205,9 @@ func testAccBranchPermissionsInvalidTypeConfig(projectKey string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Branch Permissions Test Project"
+  key             = %q
+  name            = "Branch Permissions Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_branch_permissions" "test" {
@@ -222,8 +227,9 @@ func testAccBranchPermissionsInvalidMatcherConfig(projectKey string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Branch Permissions Test Project"
+  key             = %q
+  name            = "Branch Permissions Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_branch_permissions" "test" {

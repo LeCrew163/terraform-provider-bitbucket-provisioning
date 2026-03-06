@@ -52,9 +52,10 @@ func testAccProjectDataSourceConfig(key, name, description string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key         = %q
-  name        = %q
-  description = %q
+  key             = %q
+  name            = %q
+  description     = %q
+  prevent_destroy = false
 }
 
 data "bitbucketdc_project" "test" {

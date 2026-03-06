@@ -93,8 +93,9 @@ func testAccDefaultReviewersConfig(projectKey, conditionBlocks string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Default Reviewers Test Project"
+  key             = %q
+  name            = "Default Reviewers Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_default_reviewers" "test" {

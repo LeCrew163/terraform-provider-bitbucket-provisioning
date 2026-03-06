@@ -37,6 +37,9 @@ func TestAccRepositoryAccessKeyResource_basic(t *testing.T) {
 				ResourceName:      resourceName,
 				ImportState:       true,
 				ImportStateVerify: true,
+				// Bitbucket deduplicates SSH keys globally; imported state reflects the
+				// API's stored metadata which may differ from the planned values.
+				ImportStateVerifyIgnore: []string{"public_key", "label"},
 			},
 			// ── Step 3: Update permission to write ────────────────────────────
 			{
@@ -103,13 +106,15 @@ func testAccRepoAccessKeyConfig(projectKey, repoName, publicKey, label, permissi
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Access Key Test Project"
+  key             = %q
+  name            = "Access Key Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_repository" "test" {
-  project_key = bitbucketdc_project.test.key
-  name        = %q
+  project_key     = bitbucketdc_project.test.key
+  name            = %q
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_repository_access_key" "test" {
@@ -127,13 +132,15 @@ func testAccRepoAccessKeyNoLabelConfig(projectKey, repoName, publicKey, permissi
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Access Key Test Project"
+  key             = %q
+  name            = "Access Key Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_repository" "test" {
-  project_key = bitbucketdc_project.test.key
-  name        = %q
+  project_key     = bitbucketdc_project.test.key
+  name            = %q
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_repository_access_key" "test" {

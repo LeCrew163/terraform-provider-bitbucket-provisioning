@@ -3,7 +3,7 @@ terraform {
   required_providers {
     bitbucketdc = {
       source  = "LeCrew163/bitbucket-provisioning"
-      version = "= 0.10.0"
+      version = "= 0.10.3"
     }
   }
 }

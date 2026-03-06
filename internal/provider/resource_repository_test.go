@@ -37,9 +37,10 @@ func TestAccRepositoryResource_basic(t *testing.T) {
 			},
 			// ── Step 2: Import by project_key/slug ───────────────────────
 			{
-				ResourceName:      resourceName,
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"prevent_destroy"},
 			},
 			// ── Step 3: Update name and description ──────────────────────
 			{
@@ -124,16 +125,18 @@ func testAccRepositoryConfig(projectKey, name, description string, public, forka
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Repo Test Project"
+  key             = %q
+  name            = "Repo Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_repository" "test" {
-  project_key = bitbucketdc_project.test.key
-  name        = %q
-  description = %q
-  public      = %t
-  forkable    = %t
+  project_key     = bitbucketdc_project.test.key
+  name            = %q
+  description     = %q
+  public          = %t
+  forkable        = %t
+  prevent_destroy = false
 }
 `, projectKey, name, description, public, forkable)
 }
@@ -145,13 +148,15 @@ func testAccRepositoryMinimalConfig(projectKey, name string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Repo Test Project"
+  key             = %q
+  name            = "Repo Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_repository" "minimal" {
-  project_key = bitbucketdc_project.test.key
-  name        = %q
+  project_key     = bitbucketdc_project.test.key
+  name            = %q
+  prevent_destroy = false
 }
 `, projectKey, name)
 }

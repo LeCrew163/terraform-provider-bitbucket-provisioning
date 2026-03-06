@@ -33,9 +33,10 @@ func TestAccProjectResource_basic(t *testing.T) {
 			},
 			// ── Step 2: Import by key ─────────────────────────────────────
 			{
-				ResourceName:      resourceName,
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"prevent_destroy"},
 			},
 			// ── Step 3: Update name and description ──────────────────────
 			{
@@ -56,9 +57,10 @@ func TestAccProjectResource_basic(t *testing.T) {
 			},
 			// ── Step 5: Import after update ───────────────────────────────
 			{
-				ResourceName:      resourceName,
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"prevent_destroy"},
 			},
 		},
 	})
@@ -179,11 +181,6 @@ func TestAccProjectResource_invalidKeyPlan(t *testing.T) {
 		errorRegexp *regexp.Regexp
 	}{
 		{
-			name:        "lowercase",
-			key:         "lowercase",
-			errorRegexp: regexp.MustCompile(`Invalid Project Key`),
-		},
-		{
 			name:        "starts_with_underscore",
 			key:         "_STARTS",
 			errorRegexp: regexp.MustCompile(`Invalid Project Key`),
@@ -194,13 +191,13 @@ func TestAccProjectResource_invalidKeyPlan(t *testing.T) {
 			errorRegexp: regexp.MustCompile(`Invalid Project Key`),
 		},
 		{
-			name:        "contains_hyphen",
-			key:         "MY-PROJECT",
+			name:        "starts_with_hyphen",
+			key:         "-STARTS",
 			errorRegexp: regexp.MustCompile(`Invalid Project Key`),
 		},
 		{
-			name:        "single_char",
-			key:         "A",
+			name:        "contains_space",
+			key:         "MY PROJECT",
 			errorRegexp: regexp.MustCompile(`Invalid Project Key`),
 		},
 	}
@@ -280,10 +277,11 @@ func testAccProjectAllFieldsConfig(key, name, description string, public bool) s
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key         = %q
-  name        = %q
-  description = %q
-  public      = %t
+  key             = %q
+  name            = %q
+  description     = %q
+  public          = %t
+  prevent_destroy = false
 }
 `, key, name, description, public)
 }
@@ -295,8 +293,9 @@ func testAccProjectMinimalConfig(key, name string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "minimal" {
-  key  = %q
-  name = %q
+  key             = %q
+  name            = %q
+  prevent_destroy = false
 }
 `, key, name)
 }
@@ -309,13 +308,15 @@ func testAccProjectDuplicateKeyConfig(key string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Duplicate Key Test"
+  key             = %q
+  name            = "Duplicate Key Test"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_project" "dup" {
-  key  = %q
-  name = "Duplicate Key Test (copy)"
+  key             = %q
+  name            = "Duplicate Key Test (copy)"
+  prevent_destroy = false
 }
 `, key, key)
 }

@@ -55,13 +55,15 @@ func testAccRepositoryDataSourceConfig(projectKey, repoName string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Repository Data Source Test Project"
+  key             = %q
+  name            = "Repository Data Source Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_repository" "test" {
-  project_key = bitbucketdc_project.test.key
-  name        = %q
+  project_key     = bitbucketdc_project.test.key
+  name            = %q
+  prevent_destroy = false
 }
 
 data "bitbucketdc_repository" "test" {

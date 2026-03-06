@@ -74,8 +74,9 @@ func testAccProjectsDataSourceAllConfig(projectKey string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Projects DS All Test"
+  key             = %q
+  name            = "Projects DS All Test"
+  prevent_destroy = false
 }
 
 data "bitbucketdc_projects" "all" {
@@ -89,8 +90,9 @@ func testAccProjectsDataSourceFilteredConfig(projectKey, projectName, filter str
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = %q
+  key             = %q
+  name            = %q
+  prevent_destroy = false
 }
 
 data "bitbucketdc_projects" "filtered" {
@@ -106,8 +108,9 @@ func testAccProjectsDataSourceNoMatchConfig(projectKey string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "NoMatch Project"
+  key             = %q
+  name            = "NoMatch Project"
+  prevent_destroy = false
 }
 
 data "bitbucketdc_projects" "nomatch" {

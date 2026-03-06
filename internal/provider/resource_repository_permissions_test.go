@@ -88,13 +88,15 @@ func testAccRepoPermissionsConfig(projectKey, repoName, permBlocks string) strin
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Repo Permissions Test Project"
+  key             = %q
+  name            = "Repo Permissions Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_repository" "test" {
-  project_key = bitbucketdc_project.test.key
-  name        = %q
+  project_key     = bitbucketdc_project.test.key
+  name            = %q
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_repository_permissions" "test" {

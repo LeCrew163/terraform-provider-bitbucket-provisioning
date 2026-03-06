@@ -9,6 +9,14 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.10.4] — 2026-03-06
+
+### Fixed
+
+- `bitbucketdc_project_access_key` and `bitbucketdc_repository_access_key`: handle Bitbucket's global SSH key deduplication correctly. When the same SSH key material is added to multiple projects or repositories, Bitbucket returns the pre-existing global key object (including its original label and comment text) rather than the submitted values. The provider now preserves the planned `public_key` and `label` values through Create, Read, and Update so that Terraform state stays consistent with the configuration and "provider produced inconsistent result after apply" errors no longer occur.
+
+## [0.10.3] — 2026-03-05
+
 ### Added
 
 - `prevent_destroy` attribute on `bitbucketdc_project` and `bitbucketdc_repository`. Defaults to `true` — Terraform will refuse to delete these resources unless `prevent_destroy = false` is set explicitly in the resource block. This prevents accidental destruction of projects and repositories that contain real data.

@@ -152,6 +152,12 @@ func (r *repositoryAccessKeyResource) Create(ctx context.Context, req resource.C
 		"repository_slug": plan.RepositorySlug.ValueString(),
 	})
 
+	// Bitbucket deduplicates SSH keys globally by key material, so the API may
+	// return a pre-existing key object with different text/label metadata.
+	// Preserve the planned values so state stays consistent with config.
+	plannedPublicKey := plan.PublicKey
+	plannedLabel := plan.Label
+
 	keyData := bitbucket.NewAddSshKeyRequest()
 	keyData.SetText(plan.PublicKey.ValueString())
 	if !plan.Label.IsNull() && !plan.Label.IsUnknown() {
@@ -195,6 +201,10 @@ func (r *repositoryAccessKeyResource) Create(ctx context.Context, req resource.C
 				return
 			}
 			mapRepoAccessKeyToState(plan.ProjectKey.ValueString(), plan.RepositorySlug.ValueString(), found, &plan)
+			plan.PublicKey = plannedPublicKey
+			if !plannedLabel.IsNull() && !plannedLabel.IsUnknown() {
+				plan.Label = plannedLabel
+			}
 			tflog.Debug(ctx, "Repository access key created (recovered)", map[string]interface{}{"id": plan.ID.ValueString()})
 			resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
 			return
@@ -204,6 +214,10 @@ func (r *repositoryAccessKeyResource) Create(ctx context.Context, req resource.C
 	}
 
 	mapRepoAccessKeyToState(plan.ProjectKey.ValueString(), plan.RepositorySlug.ValueString(), created, &plan)
+	plan.PublicKey = plannedPublicKey
+	if !plannedLabel.IsNull() && !plannedLabel.IsUnknown() {
+		plan.Label = plannedLabel
+	}
 
 	tflog.Debug(ctx, "Repository access key created", map[string]interface{}{
 		"id": plan.ID.ValueString(),
@@ -227,6 +241,10 @@ func (r *repositoryAccessKeyResource) Read(ctx context.Context, req resource.Rea
 		"key_id":          keyID,
 	})
 
+	// Preserve values stored at creation to avoid drift from global key deduplication.
+	savedPublicKey := state.PublicKey
+	savedLabel := state.Label
+
 	found, err := r.findKeyByID(ctx, state.ProjectKey.ValueString(), state.RepositorySlug.ValueString(), keyID)
 	if err != nil {
 		resp.Diagnostics.Append(client.HandleError("Failed to Read Repository Access Key", err)...)
@@ -243,6 +261,12 @@ func (r *repositoryAccessKeyResource) Read(ctx context.Context, req resource.Rea
 	}
 
 	mapRepoAccessKeyToState(state.ProjectKey.ValueString(), state.RepositorySlug.ValueString(), found, &state)
+	if !savedPublicKey.IsNull() {
+		state.PublicKey = savedPublicKey
+	}
+	if !savedLabel.IsNull() {
+		state.Label = savedLabel
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
@@ -280,6 +304,10 @@ func (r *repositoryAccessKeyResource) Update(ctx context.Context, req resource.U
 			}
 			if found != nil {
 				mapRepoAccessKeyToState(plan.ProjectKey.ValueString(), plan.RepositorySlug.ValueString(), found, &plan)
+				// public_key and label cannot change via Update (they are RequiresReplace);
+				// preserve the state values to avoid drift from global key deduplication.
+				plan.PublicKey = state.PublicKey
+				plan.Label = state.Label
 				resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
 				return
 			}
@@ -289,6 +317,10 @@ func (r *repositoryAccessKeyResource) Update(ctx context.Context, req resource.U
 	}
 
 	mapRepoAccessKeyToState(plan.ProjectKey.ValueString(), plan.RepositorySlug.ValueString(), updated, &plan)
+	// public_key and label cannot change via Update (they are RequiresReplace);
+	// preserve the state values to avoid drift from global key deduplication.
+	plan.PublicKey = state.PublicKey
+	plan.Label = state.Label
 	resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
 }
 
@@ -408,7 +440,7 @@ func (r *repositoryAccessKeyResource) findKeyByText(ctx context.Context, project
 		}
 
 		for _, key := range page.GetValues() {
-			if kd, ok := key.GetKeyOk(); ok && kd.GetText() == publicKeyText {
+			if kd, ok := key.GetKeyOk(); ok && normalizeSSHKey(kd.GetText()) == normalizeSSHKey(publicKeyText) {
 				k := key
 				return &k, nil
 			}

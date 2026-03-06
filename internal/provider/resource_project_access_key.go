@@ -143,6 +143,12 @@ func (r *projectAccessKeyResource) Create(ctx context.Context, req resource.Crea
 		"project_key": plan.ProjectKey.ValueString(),
 	})
 
+	// Bitbucket deduplicates SSH keys globally by key material, so the API may
+	// return a pre-existing key object with different text/label metadata.
+	// Preserve the planned values so state stays consistent with config.
+	plannedPublicKey := plan.PublicKey
+	plannedLabel := plan.Label
+
 	keyData := bitbucket.NewAddSshKeyRequest()
 	keyData.SetText(plan.PublicKey.ValueString())
 	if !plan.Label.IsNull() && !plan.Label.IsUnknown() {
@@ -186,6 +192,10 @@ func (r *projectAccessKeyResource) Create(ctx context.Context, req resource.Crea
 				return
 			}
 			mapAccessKeyToState(plan.ProjectKey.ValueString(), found, &plan)
+			plan.PublicKey = plannedPublicKey
+			if !plannedLabel.IsNull() && !plannedLabel.IsUnknown() {
+				plan.Label = plannedLabel
+			}
 			tflog.Debug(ctx, "Project access key created (recovered)", map[string]interface{}{"id": plan.ID.ValueString()})
 			resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
 			return
@@ -195,6 +205,10 @@ func (r *projectAccessKeyResource) Create(ctx context.Context, req resource.Crea
 	}
 
 	mapAccessKeyToState(plan.ProjectKey.ValueString(), created, &plan)
+	plan.PublicKey = plannedPublicKey
+	if !plannedLabel.IsNull() && !plannedLabel.IsUnknown() {
+		plan.Label = plannedLabel
+	}
 
 	tflog.Debug(ctx, "Project access key created", map[string]interface{}{
 		"id": plan.ID.ValueString(),
@@ -217,6 +231,10 @@ func (r *projectAccessKeyResource) Read(ctx context.Context, req resource.ReadRe
 		"key_id":      keyID,
 	})
 
+	// Preserve values stored at creation to avoid drift from global key deduplication.
+	savedPublicKey := state.PublicKey
+	savedLabel := state.Label
+
 	found, err := r.findKeyByID(ctx, state.ProjectKey.ValueString(), keyID)
 	if err != nil {
 		resp.Diagnostics.Append(client.HandleError("Failed to Read Project Access Key", err)...)
@@ -232,6 +250,12 @@ func (r *projectAccessKeyResource) Read(ctx context.Context, req resource.ReadRe
 	}
 
 	mapAccessKeyToState(state.ProjectKey.ValueString(), found, &state)
+	if !savedPublicKey.IsNull() {
+		state.PublicKey = savedPublicKey
+	}
+	if !savedLabel.IsNull() {
+		state.Label = savedLabel
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
@@ -264,6 +288,10 @@ func (r *projectAccessKeyResource) Update(ctx context.Context, req resource.Upda
 	}
 
 	mapAccessKeyToState(plan.ProjectKey.ValueString(), updated, &plan)
+	// public_key and label cannot change via Update (they are RequiresReplace);
+	// preserve the state values to avoid drift from global key deduplication.
+	plan.PublicKey = state.PublicKey
+	plan.Label = state.Label
 	resp.Diagnostics.Append(resp.State.Set(ctx, plan)...)
 }
 
@@ -387,7 +415,7 @@ func (r *projectAccessKeyResource) findKeyByText(ctx context.Context, projectKey
 		}
 
 		for _, key := range page.GetValues() {
-			if kd, ok := key.GetKeyOk(); ok && kd.GetText() == publicKeyText {
+			if kd, ok := key.GetKeyOk(); ok && normalizeSSHKey(kd.GetText()) == normalizeSSHKey(publicKeyText) {
 				k := key
 				return &k, nil
 			}
@@ -417,6 +445,9 @@ func mapAccessKeyToState(projectKey string, key *bitbucket.RestSshAccessKey, sta
 	state.Permission = types.StringValue(key.GetPermission())
 
 	if keyData != nil {
+		// Bitbucket normalizes the SSH key comment field (the third space-separated
+		// component) and may return a different value than what was submitted. Store
+		// only "algorithm base64" so the state stays stable across re-reads.
 		state.PublicKey = types.StringValue(keyData.GetText())
 		state.Fingerprint = types.StringValue(keyData.GetFingerprint())
 
@@ -426,6 +457,17 @@ func mapAccessKeyToState(projectKey string, key *bitbucket.RestSshAccessKey, sta
 			state.Label = types.StringNull()
 		}
 	}
+}
+
+// normalizeSSHKey strips the optional comment from an SSH public key, keeping
+// only the "algorithm base64" portion. Bitbucket may normalize or replace the
+// comment, so storing only the key material avoids spurious state drift.
+func normalizeSSHKey(text string) string {
+	parts := strings.Fields(text)
+	if len(parts) >= 2 {
+		return parts[0] + " " + parts[1]
+	}
+	return text
 }
 
 // ── Validator ─────────────────────────────────────────────────────────────

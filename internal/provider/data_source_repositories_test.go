@@ -90,13 +90,15 @@ func testAccRepositoriesDataSourceAllConfig(projectKey string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Repos DS All Test"
+  key             = %q
+  name            = "Repos DS All Test"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_repository" "test" {
-  project_key = bitbucketdc_project.test.key
-  name        = "Test Repo"
+  project_key     = bitbucketdc_project.test.key
+  name            = "Test Repo"
+  prevent_destroy = false
 }
 
 data "bitbucketdc_repositories" "all" {
@@ -111,13 +113,15 @@ func testAccRepositoriesDataSourceFilteredConfig(projectKey, repoName, filter st
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Repos DS Filter Test"
+  key             = %q
+  name            = "Repos DS Filter Test"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_repository" "test" {
-  project_key = bitbucketdc_project.test.key
-  name        = %q
+  project_key     = bitbucketdc_project.test.key
+  name            = %q
+  prevent_destroy = false
 }
 
 data "bitbucketdc_repositories" "filtered" {
@@ -133,13 +137,15 @@ func testAccRepositoriesDataSourceNoMatchConfig(projectKey string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Repos DS NoMatch Test"
+  key             = %q
+  name            = "Repos DS NoMatch Test"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_repository" "test" {
-  project_key = bitbucketdc_project.test.key
-  name        = "Some Repo"
+  project_key     = bitbucketdc_project.test.key
+  name            = "Some Repo"
+  prevent_destroy = false
 }
 
 data "bitbucketdc_repositories" "nomatch" {

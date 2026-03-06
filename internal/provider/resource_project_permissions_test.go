@@ -82,8 +82,9 @@ func testAccProjectPermissionsConfig(projectKey, username, permission string) st
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Permissions Test Project"
+  key             = %q
+  name            = "Permissions Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_project_permissions" "test" {
@@ -103,8 +104,9 @@ func testAccProjectPermissionsEmptyConfig(projectKey string) string {
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Permissions Test Project"
+  key             = %q
+  name            = "Permissions Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_project_permissions" "test" {

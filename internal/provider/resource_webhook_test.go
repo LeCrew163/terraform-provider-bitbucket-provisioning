@@ -102,13 +102,15 @@ func testAccWebhookRepoConfig(projectKey, repoName, name, url, eventsJSON string
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Webhook Test Project"
+  key             = %q
+  name            = "Webhook Test Project"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_repository" "test" {
-  project_key = bitbucketdc_project.test.key
-  name        = %q
+  project_key     = bitbucketdc_project.test.key
+  name            = %q
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_webhook" "test" {
@@ -128,8 +130,9 @@ func testAccWebhookProjectConfig(projectKey, name, url, eventsJSON string) strin
 provider "bitbucketdc" {}
 
 resource "bitbucketdc_project" "test" {
-  key  = %q
-  name = "Webhook Project Test"
+  key             = %q
+  name            = "Webhook Project Test"
+  prevent_destroy = false
 }
 
 resource "bitbucketdc_webhook" "proj" {
