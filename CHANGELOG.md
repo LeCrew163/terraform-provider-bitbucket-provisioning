@@ -15,6 +15,12 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - `bitbucketdc_project_access_key` and `bitbucketdc_repository_access_key`: handle Bitbucket's global SSH key deduplication correctly. When the same SSH key material is added to multiple projects or repositories, Bitbucket returns the pre-existing global key object (including its original label and comment text) rather than the submitted values. The provider now preserves the planned `public_key` and `label` values through Create, Read, and Update so that Terraform state stays consistent with the configuration and "provider produced inconsistent result after apply" errors no longer occur.
 
+- `bitbucketdc_webhook`: `webhook_id` was showing as `(known after apply)` on every in-place update (e.g. changing `name` or `events`) even though the ID never changes. Added `UseStateForUnknown()` plan modifier to keep the known value stable across updates.
+
+- `bitbucketdc_webhook` ImportState: added a nil guard on the webhook object returned by the API before mapping it to state, preventing a potential panic if the server returns a success response with no body.
+
+- `bitbucketdc_default_reviewers`: user lookup errors in `resolveUsers` now include the Bitbucket API error details (HTTP status and message) instead of the raw generated-client error string, making failures easier to diagnose.
+
 ## [0.10.3] — 2026-03-05
 
 ### Added
