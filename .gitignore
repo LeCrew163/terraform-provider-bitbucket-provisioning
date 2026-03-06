@@ -55,3 +55,4 @@ Thumbs.db
 tmp/
 temp/
 *.tmp
+specs/bitbucket-openapi-patched.json

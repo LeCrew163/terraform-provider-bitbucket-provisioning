@@ -101,12 +101,17 @@ lint:
 generate:
 	go generate ./...
 
+# The official Atlassian spec is patched via specs/overlay.jq before generation
+# to fix known bugs in the spec without modifying the source file.
+# See specs/README.md for the rationale and a summary of all patches.
 .PHONY: generate-client
 generate-client:
-	@echo "Generating API client from OpenAPI spec..."
+	@echo "Applying spec overlay..."
+	jq -f specs/overlay.jq specs/bitbucket-openapi.json > specs/bitbucket-openapi-patched.json
+	@echo "Generating API client from patched OpenAPI spec..."
 	@mkdir -p internal/client/generated
 	openapi-generator generate \
-		-i specs/bitbucket-openapi.json \
+		-i specs/bitbucket-openapi-patched.json \
 		-g go \
 		-o internal/client/generated \
 		--skip-validate-spec \

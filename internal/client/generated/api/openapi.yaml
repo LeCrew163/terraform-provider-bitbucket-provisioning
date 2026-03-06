@@ -36014,14 +36014,13 @@ components:
           key:
             bitLength: 1
             algorithmType: algorithmType
-            createdDate: 2000-01-23T04:56:07.000+00:00
-            lastAuthenticated: "1630041546434"
-            fingerprint: Cbg38r+gDCiNHqBk6Y1BKO+EvufFBqhFWIEXh8oq9MI
-            warning: RSA_UNSAFE_MODULUS
-            expiryDays: 30
-            id: 1
-            label: me@127.0.0.1
-            text: ssh-rsa AAAAB3... me@127.0.0.1
+            lastAuthenticated: lastAuthenticated
+            fingerprint: fingerprint
+            warning: warning
+            expiryDays: 5
+            id: 5
+            label: label
+            text: text
         - project:
             public: true
             avatarUrl: avatarUrl
@@ -36093,14 +36092,13 @@ components:
           key:
             bitLength: 1
             algorithmType: algorithmType
-            createdDate: 2000-01-23T04:56:07.000+00:00
-            lastAuthenticated: "1630041546434"
-            fingerprint: Cbg38r+gDCiNHqBk6Y1BKO+EvufFBqhFWIEXh8oq9MI
-            warning: RSA_UNSAFE_MODULUS
-            expiryDays: 30
-            id: 1
-            label: me@127.0.0.1
-            text: ssh-rsa AAAAB3... me@127.0.0.1
+            lastAuthenticated: lastAuthenticated
+            fingerprint: fingerprint
+            warning: warning
+            expiryDays: 5
+            id: 5
+            label: label
+            text: text
         scope:
           resourceId: 2
           type: GLOBAL
@@ -36296,17 +36294,16 @@ components:
         key:
           bitLength: 1
           algorithmType: algorithmType
-          createdDate: 2000-01-23T04:56:07.000+00:00
-          lastAuthenticated: "1630041546434"
-          fingerprint: Cbg38r+gDCiNHqBk6Y1BKO+EvufFBqhFWIEXh8oq9MI
-          warning: RSA_UNSAFE_MODULUS
-          expiryDays: 30
-          id: 1
-          label: me@127.0.0.1
-          text: ssh-rsa AAAAB3... me@127.0.0.1
+          lastAuthenticated: lastAuthenticated
+          fingerprint: fingerprint
+          warning: warning
+          expiryDays: 5
+          id: 5
+          label: label
+          text: text
       properties:
         key:
-          $ref: "#/components/schemas/addSshKey_request"
+          $ref: "#/components/schemas/AddSshKeyRequest"
         permission:
           enum:
           - USER_ADMIN
@@ -41560,6 +41557,7 @@ components:
         scopeType: scopeType
         name: name
         active: true
+        id: 0
         sslVerificationRequired: true
         events:
         - events
@@ -41590,6 +41588,12 @@ components:
           writeOnly: true
         url:
           type: string
+        id:
+          description: Unique webhook ID. Returned by the API but absent from the
+            official spec.
+          format: int64
+          readOnly: true
+          type: integer
     RestWebhookCredentials:
       example:
         password: password
@@ -41720,6 +41724,45 @@ components:
           description: "The user's password, which the system may require when users\
             \ update their email."
           example: user-password
+          type: string
+      type: object
+    AddSshKeyRequest:
+      example:
+        bitLength: 1
+        algorithmType: algorithmType
+        lastAuthenticated: lastAuthenticated
+        fingerprint: fingerprint
+        warning: warning
+        expiryDays: 5
+        id: 5
+        label: label
+        text: text
+      properties:
+        algorithmType:
+          type: string
+        bitLength:
+          format: int32
+          type: integer
+        expiryDays:
+          format: int32
+          type: integer
+        fingerprint:
+          readOnly: true
+          type: string
+        id:
+          format: int32
+          readOnly: true
+          type: integer
+        label:
+          type: string
+        lastAuthenticated:
+          readOnly: true
+          type: string
+        text:
+          type: string
+        warning:
+          description: "Contains a warning about the key, for example that it's deprecated."
+          readOnly: true
           type: string
       type: object
     getAllAccessTokens_200_response:
@@ -42695,14 +42738,13 @@ components:
             key:
               bitLength: 1
               algorithmType: algorithmType
-              createdDate: 2000-01-23T04:56:07.000+00:00
-              lastAuthenticated: "1630041546434"
-              fingerprint: Cbg38r+gDCiNHqBk6Y1BKO+EvufFBqhFWIEXh8oq9MI
-              warning: RSA_UNSAFE_MODULUS
-              expiryDays: 30
-              id: 1
-              label: me@127.0.0.1
-              text: ssh-rsa AAAAB3... me@127.0.0.1
+              lastAuthenticated: lastAuthenticated
+              fingerprint: fingerprint
+              warning: warning
+              expiryDays: 5
+              id: 5
+              label: label
+              text: text
           - project:
               public: true
               avatarUrl: avatarUrl
@@ -42774,14 +42816,13 @@ components:
             key:
               bitLength: 1
               algorithmType: algorithmType
-              createdDate: 2000-01-23T04:56:07.000+00:00
-              lastAuthenticated: "1630041546434"
-              fingerprint: Cbg38r+gDCiNHqBk6Y1BKO+EvufFBqhFWIEXh8oq9MI
-              warning: RSA_UNSAFE_MODULUS
-              expiryDays: 30
-              id: 1
-              label: me@127.0.0.1
-              text: ssh-rsa AAAAB3... me@127.0.0.1
+              lastAuthenticated: lastAuthenticated
+              fingerprint: fingerprint
+              warning: warning
+              expiryDays: 5
+              id: 5
+              label: label
+              text: text
           scope:
             resourceId: 2
             type: GLOBAL
@@ -42887,14 +42928,13 @@ components:
             key:
               bitLength: 1
               algorithmType: algorithmType
-              createdDate: 2000-01-23T04:56:07.000+00:00
-              lastAuthenticated: "1630041546434"
-              fingerprint: Cbg38r+gDCiNHqBk6Y1BKO+EvufFBqhFWIEXh8oq9MI
-              warning: RSA_UNSAFE_MODULUS
-              expiryDays: 30
-              id: 1
-              label: me@127.0.0.1
-              text: ssh-rsa AAAAB3... me@127.0.0.1
+              lastAuthenticated: lastAuthenticated
+              fingerprint: fingerprint
+              warning: warning
+              expiryDays: 5
+              id: 5
+              label: label
+              text: text
           - project:
               public: true
               avatarUrl: avatarUrl
@@ -42966,14 +43006,13 @@ components:
             key:
               bitLength: 1
               algorithmType: algorithmType
-              createdDate: 2000-01-23T04:56:07.000+00:00
-              lastAuthenticated: "1630041546434"
-              fingerprint: Cbg38r+gDCiNHqBk6Y1BKO+EvufFBqhFWIEXh8oq9MI
-              warning: RSA_UNSAFE_MODULUS
-              expiryDays: 30
-              id: 1
-              label: me@127.0.0.1
-              text: ssh-rsa AAAAB3... me@127.0.0.1
+              lastAuthenticated: lastAuthenticated
+              fingerprint: fingerprint
+              warning: warning
+              expiryDays: 5
+              id: 5
+              label: label
+              text: text
           scope:
             resourceId: 2
             type: GLOBAL
@@ -43260,14 +43299,13 @@ components:
           key:
             bitLength: 1
             algorithmType: algorithmType
-            createdDate: 2000-01-23T04:56:07.000+00:00
-            lastAuthenticated: "1630041546434"
-            fingerprint: Cbg38r+gDCiNHqBk6Y1BKO+EvufFBqhFWIEXh8oq9MI
-            warning: RSA_UNSAFE_MODULUS
-            expiryDays: 30
-            id: 1
-            label: me@127.0.0.1
-            text: ssh-rsa AAAAB3... me@127.0.0.1
+            lastAuthenticated: lastAuthenticated
+            fingerprint: fingerprint
+            warning: warning
+            expiryDays: 5
+            id: 5
+            label: label
+            text: text
         - project:
             public: true
             avatarUrl: avatarUrl
@@ -43339,14 +43377,13 @@ components:
           key:
             bitLength: 1
             algorithmType: algorithmType
-            createdDate: 2000-01-23T04:56:07.000+00:00
-            lastAuthenticated: "1630041546434"
-            fingerprint: Cbg38r+gDCiNHqBk6Y1BKO+EvufFBqhFWIEXh8oq9MI
-            warning: RSA_UNSAFE_MODULUS
-            expiryDays: 30
-            id: 1
-            label: me@127.0.0.1
-            text: ssh-rsa AAAAB3... me@127.0.0.1
+            lastAuthenticated: lastAuthenticated
+            fingerprint: fingerprint
+            warning: warning
+            expiryDays: 5
+            id: 5
+            label: label
+            text: text
         limit: 25
         start: 6
       properties:
@@ -43425,27 +43462,12 @@ components:
           type: array
       type: object
     addSshKey_request:
-      example:
-        bitLength: 1
-        algorithmType: algorithmType
-        createdDate: 2000-01-23T04:56:07.000+00:00
-        lastAuthenticated: "1630041546434"
-        fingerprint: Cbg38r+gDCiNHqBk6Y1BKO+EvufFBqhFWIEXh8oq9MI
-        warning: RSA_UNSAFE_MODULUS
-        expiryDays: 30
-        id: 1
-        label: me@127.0.0.1
-        text: ssh-rsa AAAAB3... me@127.0.0.1
       properties:
         algorithmType:
           type: string
         bitLength:
           format: int32
           type: integer
-        createdDate:
-          format: date-time
-          readOnly: true
-          type: string
         expiryDays:
           example: 30
           format: int32

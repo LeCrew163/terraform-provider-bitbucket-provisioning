@@ -19,8 +19,6 @@ var _ MappedNullable = &RestWebhook{}
 
 // RestWebhook struct for RestWebhook
 type RestWebhook struct {
-	// Id is not included in the OpenAPI spec but Bitbucket DC returns it in all webhook responses.
-	Id *int64 `json:"id,omitempty"`
 	Active *bool `json:"active,omitempty"`
 	Configuration map[string]interface{} `json:"configuration,omitempty"`
 	Credentials *RestWebhookCredentials `json:"credentials,omitempty"`
@@ -30,20 +28,8 @@ type RestWebhook struct {
 	SslVerificationRequired *bool `json:"sslVerificationRequired,omitempty"`
 	Statistics map[string]interface{} `json:"statistics,omitempty"`
 	Url *string `json:"url,omitempty"`
-}
-
-// GetId returns the Id field value if set, zero value otherwise.
-func (o *RestWebhook) GetId() int64 {
-	if o == nil || IsNil(o.Id) {
-		var ret int64
-		return ret
-	}
-	return *o.Id
-}
-
-// HasId returns a boolean if the Id field has been set.
-func (o *RestWebhook) HasId() bool {
-	return o != nil && !IsNil(o.Id)
+	// Unique webhook ID. Returned by the API but absent from the official spec.
+	Id *int64 `json:"id,omitempty"`
 }
 
 // NewRestWebhook instantiates a new RestWebhook object
@@ -351,6 +337,38 @@ func (o *RestWebhook) SetUrl(v string) {
 	o.Url = &v
 }
 
+// GetId returns the Id field value if set, zero value otherwise.
+func (o *RestWebhook) GetId() int64 {
+	if o == nil || IsNil(o.Id) {
+		var ret int64
+		return ret
+	}
+	return *o.Id
+}
+
+// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *RestWebhook) GetIdOk() (*int64, bool) {
+	if o == nil || IsNil(o.Id) {
+		return nil, false
+	}
+	return o.Id, true
+}
+
+// HasId returns a boolean if a field has been set.
+func (o *RestWebhook) HasId() bool {
+	if o != nil && !IsNil(o.Id) {
+		return true
+	}
+
+	return false
+}
+
+// SetId gets a reference to the given int64 and assigns it to the Id field.
+func (o *RestWebhook) SetId(v int64) {
+	o.Id = &v
+}
+
 func (o RestWebhook) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -387,6 +405,9 @@ func (o RestWebhook) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Url) {
 		toSerialize["url"] = o.Url
+	}
+	if !IsNil(o.Id) {
+		toSerialize["id"] = o.Id
 	}
 	return toSerialize, nil
 }

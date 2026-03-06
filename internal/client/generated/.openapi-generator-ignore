@@ -21,3 +21,27 @@
 #docs/*.md
 # Then explicitly reverse the ignore rule for a single file:
 #!docs/README.md
+
+# The generated package is part of the main module — do not overwrite these
+# files which are owned by the parent project, not the generator.
+go.mod
+go.sum
+README.md
+git_push.sh
+.travis.yml
+
+# api_deprecated.go declares duplicate types that conflict with the regular API
+# files (e.g. ApiApproveRequest, ApiGetBuildStatusStatsRequest). The deprecated
+# endpoints are not used by this provider, so we exclude the file entirely.
+# client.go is also excluded because it references DeprecatedAPIService from the
+# excluded file — the committed version has those two lines removed.
+api_deprecated.go
+client.go
+
+# These models have mutually recursive types. The generator emits value types
+# ([]Comment, CommentThread) which the Go compiler rejects as infinite-size
+# structs. The committed versions use pointer types (*Comment, *CommentThread)
+# which are correct. None of these models are used by the provider.
+model_comment.go
+model_comment_thread.go
+model_pull_request_participant.go

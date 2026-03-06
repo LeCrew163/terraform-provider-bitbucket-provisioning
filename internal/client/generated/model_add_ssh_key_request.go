@@ -21,8 +21,6 @@ var _ MappedNullable = &AddSshKeyRequest{}
 type AddSshKeyRequest struct {
 	AlgorithmType *string `json:"algorithmType,omitempty"`
 	BitLength *int32 `json:"bitLength,omitempty"`
-	// Unix millisecond timestamp; stored as int64 to avoid time.Time RFC-3339 unmarshal mismatch.
-	CreatedDate *int64 `json:"createdDate,omitempty"`
 	ExpiryDays *int32 `json:"expiryDays,omitempty"`
 	Fingerprint *string `json:"fingerprint,omitempty"`
 	Id *int32 `json:"id,omitempty"`
@@ -112,38 +110,6 @@ func (o *AddSshKeyRequest) HasBitLength() bool {
 // SetBitLength gets a reference to the given int32 and assigns it to the BitLength field.
 func (o *AddSshKeyRequest) SetBitLength(v int32) {
 	o.BitLength = &v
-}
-
-// GetCreatedDate returns the CreatedDate field value if set, zero value otherwise.
-func (o *AddSshKeyRequest) GetCreatedDate() int64 {
-	if o == nil || IsNil(o.CreatedDate) {
-		var ret int64
-		return ret
-	}
-	return *o.CreatedDate
-}
-
-// GetCreatedDateOk returns a tuple with the CreatedDate field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *AddSshKeyRequest) GetCreatedDateOk() (*int64, bool) {
-	if o == nil || IsNil(o.CreatedDate) {
-		return nil, false
-	}
-	return o.CreatedDate, true
-}
-
-// HasCreatedDate returns a boolean if a field has been set.
-func (o *AddSshKeyRequest) HasCreatedDate() bool {
-	if o != nil && !IsNil(o.CreatedDate) {
-		return true
-	}
-
-	return false
-}
-
-// SetCreatedDate gets a reference to the given int64 and assigns it to the CreatedDate field.
-func (o *AddSshKeyRequest) SetCreatedDate(v int64) {
-	o.CreatedDate = &v
 }
 
 // GetExpiryDays returns the ExpiryDays field value if set, zero value otherwise.
@@ -385,9 +351,6 @@ func (o AddSshKeyRequest) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.BitLength) {
 		toSerialize["bitLength"] = o.BitLength
-	}
-	if !IsNil(o.CreatedDate) {
-		toSerialize["createdDate"] = o.CreatedDate
 	}
 	if !IsNil(o.ExpiryDays) {
 		toSerialize["expiryDays"] = o.ExpiryDays
